@@ -8,7 +8,7 @@ import WaitForm from '../WaitForm';
 
 import './searchresults.scss';
 
-if (process.env.BUILD_SSR === undefined) {
+if (!process.env.BUILD_SSR) {
     require('wa-mediabox/dist/wa-mediabox.min.js');
     require('wa-mediabox/dist/wa-mediabox.min.css');
 }
