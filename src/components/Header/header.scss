@@ -1,0 +1,15 @@
+.app-header {
+    $header-height: 150px;
+    $header-padding: 2px;
+
+    background: radial-gradient(closest-side at center, #FFFFFF 0%, #91a3bb 25%, #224678 50%, #122239 75%, #000100 100%);
+    height: $header-height;
+    padding: $header-padding 0;
+
+    img {
+        display: block;
+        margin: 0 auto;
+        width: $header-height - 2 * $header-padding;
+        height: $header-height - 2 * $header-padding;
+    }
+}

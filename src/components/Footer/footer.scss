@@ -1,0 +1,14 @@
+@import "../../scss/vars";
+
+.app-footer {
+    background-image: url("../../assets/identigraf-logo.svg"),
+        linear-gradient($color-primary 0, $color-primary 28px, $color-highlight-on-primary 28px, $color-highlight-on-primary 32px, $color-primary 32px, $color-primary 100%);
+    background-repeat: no-repeat, repeat;
+    background-position: center, center;
+    background-size: contain, auto;
+    border: 1px solid $color-primary;
+    border-left: 0;
+    border-right: 0;
+    height: 58px;
+    flex: 0 0 58px;
+}

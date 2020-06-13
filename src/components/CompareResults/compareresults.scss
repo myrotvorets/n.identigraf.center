@@ -1,0 +1,36 @@
+.CompareResults {
+    ul {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        display: block;
+        padding: .75rem 1.25rem;
+        margin-bottom: -1px;
+        background: #FFF;
+        border: 1px solid rgba(0, 0, 0, .125);
+
+        &:first-child {
+            border-top-left-radius: .4rem;
+            border-top-right-radius: .4rem;
+            position: sticky;
+            top: 1em;
+            z-index: 100;
+        }
+
+        &:last-child {
+            border-bottom-left-radius: .4rem;
+            border-bottom-right-radius: .4rem;
+        }
+
+        img {
+            margin-bottom: 1rem;
+            max-width: 100%;
+            height: auto;
+        }
+    }
+}

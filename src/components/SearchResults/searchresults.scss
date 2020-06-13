@@ -1,0 +1,137 @@
+.SearchResults {
+    $face-width-xs: 200px;
+    $face-width-md: 250px;
+
+    .block {
+        width: 100%;
+    }
+
+    .uploadedPhoto {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .face {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .recognized-face {
+        width: 100%;
+        text-align: center;
+        background: #FFF;
+
+        h4 {
+            margin: 0;
+        }
+
+        img {
+            top: 0.5rem;
+            position: sticky;
+            display: block;
+            margin: auto;
+            padding: 0 .5rem;
+        }
+
+        small {
+            font-style: italic;
+        }
+    }
+
+    .matched-faces {
+        flex: 1;
+
+        h4 {
+            margin: 0;
+        }
+
+        ol {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            > li {
+                border: 1px solid #ccc;
+                padding: 1rem;
+                margin-top: -1px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+        }
+
+        .name {
+            display: block;
+            margin-bottom: 0.5rem;
+            flex: 1 0 100%;
+
+            > a {
+                color: #B50000;
+            }
+        }
+
+        .image-container {
+            display: flex;
+            background: #eee;
+            width: $face-width-xs;
+            height: $face-width-xs;
+
+            .face {
+                margin: auto;
+                align-self: center;
+                max-width: $face-width-xs;
+                max-height: $face-width-xs;
+            }
+        }
+
+        .info {
+            flex-grow: 1;
+            padding: 0 0 0 1rem;
+
+            p {
+                margin: 0;
+            }
+        }
+
+        /* medium */
+        @media (min-width: 768px) {
+            .image-container {
+                width: $face-width-md;
+                height: $face-width-md;
+
+                .face {
+                    max-width: $face-width-md;
+                    max-height: $face-width-md;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 575px) {
+        .recognized-face {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+    }
+
+    @media (min-width: 576px) {
+        .recognized-face {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .recognized-face {
+            flex: 0 0 17%;
+            max-width: 17%;
+        }
+    }
+}
