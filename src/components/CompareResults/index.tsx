@@ -49,7 +49,7 @@ export default class CompareResults extends PureComponent<Props, State> {
                     break;
 
                 case 'inprogress':
-                    this._timerId = self.setTimeout(this._checkStatus, 3_000);
+                    this._timerId = self.setTimeout(this._checkStatus, 1_000);
                     break;
             }
         });

@@ -81,7 +81,7 @@ export default class SearchResults extends PureComponent<Props, State> {
                     break;
 
                 case 'inprogress':
-                    this._timerId = self.setTimeout(this._checkStatus, 10_000);
+                    this._timerId = self.setTimeout(this._checkStatus, 2_000);
                     break;
             }
         });
