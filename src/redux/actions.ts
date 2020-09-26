@@ -1,3 +1,1 @@
-import { setLoggedIn, setLoggedOut } from './actions/user';
-
-export { setLoggedIn, setLoggedOut };
+export { setUser } from './actions/user';

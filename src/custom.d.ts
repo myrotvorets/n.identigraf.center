@@ -12,24 +12,25 @@ declare module '*.lazy.scss' {
 
 declare module 'unistore/preact' {
     import { AnyComponent, ComponentConstructor } from 'preact';
-    import { ActionCreator, ActionFn, ActionMap, StateMapper, Store } from 'unistore';
+    import { ActionCreator, ActionFn, ActionMap, StateMapper } from 'unistore';
 
-    type TupleTail<T extends any[]> = T['length'] extends 0
+    type TupleTail<T extends any[], R> = T['length'] extends 0
         ? never
-        : ((...tail: T) => void) extends (head: any, ...tail: infer I) => void
+        : ((...tail: T) => R) extends (head: any, ...tail: infer I) => R
         ? I
         : never;
 
-    type MakeBoundAction<K, F extends (...args: any) => ReturnType<ActionFn<K>>> = (
-        ...args: TupleTail<Parameters<F>>
-    ) => void;
-    type BoundActionFn<K> = MakeBoundAction<K, ActionFn<K>>;
+    type MakeBoundAction<K, A extends (...args: any) => Promise<Partial<K>> | Partial<K> | void> = (
+        ...args: TupleTail<Parameters<A>, ReturnType<A>>
+    ) => ReturnType<A>;
 
-    export type ActionBinder<K, T extends object> = {
-        [P in keyof T]: BoundActionFn<T[P]>;
+    type BoundActionFn<K, F extends ActionFn<K>> = MakeBoundAction<K, F>;
+
+    export type ActionBinder<K, T extends ActionMap<K>> = {
+        [P in keyof T]: BoundActionFn<K, T[P]>;
     };
 
-    export function connect<T, S, K, I, A extends object>(
+    export function connect<T, S, K, I, A extends ActionMap<K>>(
         mapStateToProps: string | string[] | StateMapper<T, K, I>,
         actions: ActionCreator<K> | A,
     ): (
@@ -46,7 +47,7 @@ declare module 'wa-mediabox' {
             openInNew: string;
         };
 
-        public constructor();
+        // public constructor();
 
         public galleries: Record<string | number, any>;
 

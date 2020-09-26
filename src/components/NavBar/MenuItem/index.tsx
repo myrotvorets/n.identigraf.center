@@ -1,8 +1,5 @@
-import { ComponentChild, h } from 'preact';
-import { PureComponent } from 'preact/compat';
+import { RenderableProps, h } from 'preact';
 
-export default class MenuItem extends PureComponent {
-    public render(): ComponentChild {
-        return <li className="nav__menuitem">{this.props.children}</li>;
-    }
+export default function MenuItem({ children }: RenderableProps<unknown>): h.JSX.Element {
+    return <li className="nav__menuitem">{children}</li>;
 }

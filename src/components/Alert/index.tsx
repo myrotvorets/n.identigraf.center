@@ -1,5 +1,4 @@
-import { ComponentChild, RefObject, createRef, h } from 'preact';
-import { PureComponent } from 'preact/compat';
+import { Component, ComponentChild, RefObject, createRef, h } from 'preact';
 
 import './alert.scss';
 
@@ -8,7 +7,7 @@ interface Props {
     className?: string;
 }
 
-export default class Alert extends PureComponent<Props> {
+export default class Alert extends Component<Props> {
     private _ref: RefObject<HTMLDivElement> = createRef();
 
     public componentDidMount(): void {

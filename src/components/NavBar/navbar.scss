@@ -4,148 +4,164 @@ $menu-height: 4rem;
 $menu-width: 30rem;
 
 .nav {
-	text-align: left;
-	font-size: 1.3rem;
-	line-height: 1.2;
-	background: $color-menu-background;
-	flex: 0 0 auto;
+    text-align: left;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    background: $color-menu-background;
+    flex: 0 0 auto;
 
-	height: $menu-height;
-	position: relative;
-	z-index: 900;
+    height: $menu-height;
+    position: relative;
+    z-index: 900;
 }
 
 .nav__btn {
-	display: none;
+    display: none;
 }
 
-.nav__menu, .nav__submenu {
-	list-style: none;
-	background: $color-menu-background;
-	padding: 0;
-	margin: 0;
-	display: flex;
-	flex-direction: column;
+.nav__menu,
+.nav__submenu {
+    list-style: none;
+    background: $color-menu-background;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .nav__submenu {
-	box-shadow: 1rem 1rem .5rem #666;
+    box-shadow: 1rem 1rem 0.5rem #666;
 }
 
 .nav__menu {
-	flex-direction: row;
-	flex-wrap: wrap;
-	height: $menu-height;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: $menu-height;
 
-	> li > a {
-		line-height: $menu-height;
-		vertical-align: middle;
-		padding: 0 1rem;
-	}
+    > li > a {
+        line-height: $menu-height;
+        vertical-align: middle;
+        padding: 0 1rem;
+    }
 }
 
 .nav__menuitem {
-	position: relative;
+    position: relative;
 
-	a {
-		padding: .7rem 1rem;
-		display: block;
+    a {
+        padding: 0.7rem 1rem;
+        display: block;
 
-		color: $color-menu-link;
-		font-weight: 700;
-		text-decoration: none;
+        color: $color-menu-link;
+        font-weight: 700;
+        text-decoration: none;
 
-		&:hover {
-			text-decoration: none;
-		}
-	}
+        &:hover {
+            text-decoration: none;
+        }
+    }
 }
 
 .nav__menuitem:hover {
-	> a {
-		color: $color-menu-link-hover;
-		background: $color-menu-link-hover-background;
-		transition: background 0.7s cubic-bezier(0.11, 0.6, 0.24, 0.89);
-	}
+    > a {
+        color: $color-menu-link-hover;
+        background: $color-menu-link-hover-background;
+        transition: background 0.7s cubic-bezier(0.11, 0.6, 0.24, 0.89);
+    }
 }
 
 .nav__menuitem.nav__menuitem--open > .nav__submenu {
-	display: flex;
+    display: flex;
 }
 
 .nav__menuitem--has-children {
-	.nav__submenu {
-		display: none;
-		width: $menu-width;
-		z-index: 900;
-		position: absolute;
-	}
+    .nav__submenu {
+        display: none;
+        width: $menu-width;
+        z-index: 900;
+        position: absolute;
+    }
 
-	> a::after {
-		content: "▾";
-		padding-left: .5rem;
-	}
+    > a::after {
+        content: '▾';
+        padding-left: 0.5rem;
+    }
 }
 
 .nav__submenu .nav__submenu {
-	left: 100%;
-	top: 0;
+    left: 100%;
+    top: 0;
 }
 
 @media (max-width: 768px) {
-	.nav__btn {
-		$button-padding: .3rem;
-		position: absolute;
-		right: $button-padding;
-		top: $button-padding;
-		display: block;
-		width: $menu-height - 2*$button-padding;
-		height: $menu-height - 2*$button-padding;
-		cursor: pointer;
-		user-select: none;
-	}
+    .nav__btn {
+        $button-padding: 0.36rem;
+        position: absolute;
+        right: $button-padding;
+        top: $button-padding;
+        display: block;
+        width: $menu-height - 2 * $button-padding;
+        height: $menu-height - 2 * $button-padding;
+        cursor: pointer;
+        user-select: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        margin: 0;
+        padding: 0;
+        border: 0;
 
-	.nav__menu {
-		position: relative;
-		width: 100%;
-		height: 0;
-		transition: all 0.3s ease-in;
-		overflow-y: hidden;
-		min-height: 0;
-		top: $menu-height;
+        &:hover {
+            background: transparent;
+        }
 
-		> li {
-			width: 100%;
-			display: table;
-		}
-	}
+        > svg {
+            fill: #fff;
+            stroke: #fff;
+        }
+    }
 
-	.nav__menuitem.nav__menuitem--open > .nav__submenu {
-		position: static;
-		width: 100%;
-		padding-left: 1rem;
-	}
+    .nav__menu {
+        position: relative;
+        width: 100%;
+        height: 0;
+        transition: all 0.3s ease-in;
+        overflow-y: hidden;
+        min-height: 0;
+        top: $menu-height;
 
-	.nav__menu {
-		height: 0;
-	}
+        > li {
+            width: 100%;
+            display: table;
+        }
+    }
 
-	.nav__menu.nav__menu--open {
-		height: auto;
-		overflow-y: auto;
-	}
+    .nav__menuitem.nav__menuitem--open > .nav__submenu {
+        position: static;
+        width: 100%;
+        padding-left: 1rem;
+    }
 
-	.nav__submenu {
-		box-shadow: none;
-	}
+    .nav__menu {
+        height: 0;
+    }
 
-	.nav__menuitem--has-children > a::after {
-		content: "▸";
-		padding-left: .5rem;
-	}
+    .nav__menu.nav__menu--open {
+        height: auto;
+        overflow-y: auto;
+    }
 
-	.nav__menuitem--has-children.nav__menuitem--open > a::after {
-		content: "▾";
-		padding-left: .5rem;
-	}
+    .nav__submenu {
+        box-shadow: none;
+    }
+
+    .nav__menuitem--has-children > a::after {
+        content: '▸';
+        padding-left: 0.5rem;
+    }
+
+    .nav__menuitem--has-children.nav__menuitem--open > a::after {
+        content: '▾';
+        padding-left: 0.5rem;
+    }
 }

@@ -1,19 +1,19 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import webpack from 'webpack';
-import webpackMerge from 'webpack-merge';
+import { merge } from 'webpack-merge';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import PurgecssPlugin from 'purgecss-webpack-plugin';
 import SriPlugin from 'webpack-subresource-integrity';
-import InlineRuntimePlugin from 'html-webpack-inline-runtime-plugin';
+import { HwpInlineRuntimeChunkPlugin } from 'hwp-inline-runtime-chunk-plugin';
 import glob from 'glob';
 import path from 'path';
 import commonConfig from './webpack.common';
 
 export default function (): webpack.Configuration {
-    return webpackMerge(commonConfig, {
+    return merge(commonConfig, {
         mode: 'production',
         output: {
+            pathinfo: false,
             crossOriginLoading: 'anonymous',
         },
         module: {
@@ -33,8 +33,8 @@ export default function (): webpack.Configuration {
                             loader: 'postcss-loader',
                             options: {
                                 sourceMap: false,
-                                config: {
-                                    path: path.resolve(path.join(__dirname, '..')),
+                                postcssOptions: {
+                                    config: path.resolve(path.join(__dirname, '..')),
                                 },
                             },
                         },
@@ -50,22 +50,20 @@ export default function (): webpack.Configuration {
         },
         plugins: [
             new webpack.HashedModuleIdsPlugin(),
-            new webpack.optimize.ModuleConcatenationPlugin(),
             new PurgecssPlugin({
                 paths: glob.sync(`${path.join(__dirname, '../src')}/**/*`, {
                     nodir: true,
                 }),
-                whitelistPatterns: [/wa-mediabox/],
-                whitelistPatternsChildren: [/wa-mediabox/],
+                safelist: [/wa-mediabox/],
             }),
             new MiniCssExtractPlugin({
                 filename: '[name].[contenthash:5].min.css',
                 chunkFilename: '[name].[contenthash:5].min.css',
             }),
+            new HwpInlineRuntimeChunkPlugin({ removeSourceMap: true }),
             new SriPlugin({
                 hashFuncNames: ['sha384'],
             }),
-            new InlineRuntimePlugin(),
         ],
         optimization: {
             moduleIds: 'hashed',

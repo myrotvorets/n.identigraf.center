@@ -1,40 +1,47 @@
 import { Fragment, h } from 'preact';
-import { memo } from 'preact/compat';
-import { MatchedFaceSuccess } from '../../api';
+import { MatchedFace as FoundFace } from '../../api';
 
-type Props = MatchedFaceSuccess;
+type Props = FoundFace;
 
-function MatchedFace(props: Props): h.JSX.Element {
+export default function MatchedFace(props: Props): h.JSX.Element {
     return (
         <Fragment>
             <strong class="name">
-                <a href={props.link} target="_blank" rel="noopener">
-                    {props.name}
+                <a href={props.link ?? '#'} target="_blank" rel="noopener noreferrer">
+                    {props.name || 'Невідома людина'}
                 </a>
             </strong>
             <div className="image-container">
                 <img src={`data:image/jpeg;base64,${props.face}`} className="face" alt="Обличчя" />
             </div>
             <div className="info">
-                {props.country ? <p>Країна: {props.country}</p> : null}
-                {props.mphoto ? (
+                {props.country && <p>Країна: {props.country}</p>}
+                {props.matchedPhoto && (
                     <p>
-                        <a href={props.mphoto} target="_blank" data-mediabox={props.mphoto}>
+                        <a
+                            href={props.matchedPhoto}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-mediabox={props.matchedPhoto}
+                        >
                             Світлина, яка збіглась
                         </a>
                     </p>
-                ) : null}
-                {props.pphoto ? (
+                )}
+                {props.primaryPhoto && (
                     <p>
-                        <a href={props.pphoto} target="_blank" data-mediabox={props.pphoto}>
+                        <a
+                            href={props.primaryPhoto}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-mediabox={props.primaryPhoto}
+                        >
                             Основна світлина
                         </a>
                     </p>
-                ) : null}
+                )}
                 <p>Схожість: {props.similarity}%</p>
             </div>
         </Fragment>
     );
 }
-
-export default memo(MatchedFace);

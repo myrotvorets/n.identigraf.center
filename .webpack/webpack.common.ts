@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import webpack from 'webpack';
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { InjectManifest } from 'workbox-webpack-plugin';
 import { HwpAttributesPlugin } from 'hwp-attributes-plugin';
@@ -88,7 +86,6 @@ const config: webpack.Configuration = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
             'process.env.BUILD_SSR': JSON.stringify(false),
@@ -118,14 +115,9 @@ const config: webpack.Configuration = {
         new InjectManifest({
             swSrc: './src/sw.ts',
             include: ['index.html', /\.js$/, /\.svg$/, /\.css$/],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(js|css)/,
-        }),
-        new ForkTsCheckerWebpackPlugin({
-            async: !isProd,
-            useTypescriptIncrementalApi: true,
-            eslint: !isProd,
-            reportFiles: ['src/**/*.{ts,tsx}'],
         }),
         new ServiceWorkerPlugin(),
         new HwpAttributesPlugin({

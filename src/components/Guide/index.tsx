@@ -1,8 +1,7 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
 import { Link } from 'preact-router';
 
-function Guide(): h.JSX.Element {
+export default function Guide(): h.JSX.Element {
     return (
         <section className="Guide">
             <div className="block">
@@ -142,5 +141,3 @@ function Guide(): h.JSX.Element {
         </section>
     );
 }
-
-export default memo(Guide);

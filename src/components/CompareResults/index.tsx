@@ -1,6 +1,6 @@
-import { ComponentChild, h } from 'preact';
-import { PureComponent } from 'preact/compat';
-import API from '../../api';
+import { Component, ComponentChild, h } from 'preact';
+import API, { decodeErrorResponse } from '../../api';
+import Alert from '../Alert';
 import WaitForm from '../WaitForm';
 
 import './compareresults.scss';
@@ -9,17 +9,21 @@ interface Props {
     guid: string;
 }
 
-type TheState = 'check' | 'done' | 'failure';
+type TheState = 'check' | 'done' | 'nofaces';
 
 interface State {
     state: TheState;
-    results: Record<string, [string, string, number]>;
+    error: string;
+    results: Record<string, number>;
+    numFiles: number;
 }
 
-export default class CompareResults extends PureComponent<Props, State> {
+export default class CompareResults extends Component<Props, State> {
     public state: Readonly<State> = {
         state: 'check',
+        error: '',
         results: {},
+        numFiles: 0,
     };
 
     private _timerId: number | null = null;
@@ -39,44 +43,62 @@ export default class CompareResults extends PureComponent<Props, State> {
 
         const { guid } = this.props;
         API.checkCompareStatus(guid).then((r): void => {
-            switch (r.status) {
-                case 'success':
-                    this.setState({ state: 'done', results: r.results });
-                    break;
-
-                case 'failed':
-                    this.setState({ state: 'failure' });
-                    break;
-
-                case 'inprogress':
+            if (r.success) {
+                if (r.status === 'inprogress') {
                     this._timerId = self.setTimeout(this._checkStatus, 1_000);
-                    break;
+                } else {
+                    this.setState({
+                        state: r.status === 'complete' ? 'done' : 'nofaces',
+                        results: r.matches,
+                        numFiles: r.numFiles,
+                    });
+                }
+            } else {
+                this.setState({ state: 'done', error: decodeErrorResponse(r) });
             }
         });
     };
 
+    private _renderPhoto(similarity: number, index: number): ComponentChild {
+        const { guid } = this.props;
+        return (
+            <li key={index}>
+                <img
+                    src={`https://api2.myrotvorets.center/identigraf-upload/v1/get/${guid}/${index + 1}`}
+                    alt={`Світлина ${index + 1}`}
+                    aria-describedby={`#photo-${index + 1}`}
+                />
+                <p id={`photo-${index + 1}`}>
+                    <strong>Схожість:</strong> {similarity}%
+                </p>
+            </li>
+        );
+    }
+
     private _renderResults(): ComponentChild {
-        const { 0: ref, ...others } = this.state.results;
+        const { guid } = this.props;
+        const results = Object.values(this.state.results);
         return (
             <section className="CompareResults">
                 <div className="block">
                     <header className="block__header">Результати порівняння</header>
+
+                    {this.state.state === 'nofaces' && (
+                        <Alert message="На жаль, система не змогла розпізнати обличчя на фотографії, або на фотографії кілька облич." />
+                    )}
 
                     <ul>
                         <li>
                             <p id="source-photo">
                                 <strong>Світлина, яка порівнюється</strong>
                             </p>
-                            <img src={ref[0]} alt="Завантажена світлина" aria-describedby="#source-photo" />
+                            <img
+                                src={`https://api2.myrotvorets.center/identigraf-upload/v1/get/${guid}/0`}
+                                alt="Завантажена світлина"
+                                aria-describedby="#source-photo"
+                            />
                         </li>
-                        {Object.values(others).map((item, key) => (
-                            <li key={key}>
-                                <img src={item[0]} alt={`Світлина ${key + 1}`} aria-describedby={`#photo-${key + 1}`} />
-                                <p>
-                                    <strong>Схожість:</strong> {item[2]}%
-                                </p>
-                            </li>
-                        ))}
+                        {results.map(this._renderPhoto, this)}
                     </ul>
                 </div>
             </section>
@@ -84,9 +106,13 @@ export default class CompareResults extends PureComponent<Props, State> {
     }
 
     public render(): ComponentChild {
-        const { state } = this.state;
+        const { error, state } = this.state;
         if (state === 'check') {
             return <WaitForm />;
+        }
+
+        if (error) {
+            return <Alert message={error} />;
         }
 
         return this._renderResults();

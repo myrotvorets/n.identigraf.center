@@ -1,7 +1,6 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
 
-function Contacts(): h.JSX.Element {
+export default function Contacts(): h.JSX.Element {
     return (
         <section className="Contacts">
             <div className="block">
@@ -16,7 +15,7 @@ function Contacts(): h.JSX.Element {
                 </p>
 
                 <p>
-                    <a href="https://myrotvorets.news/donate/" target="_blank" rel="noopener noreferer">
+                    <a href="https://myrotvorets.news/donate/" target="_blank" rel="noopener noreferrer">
                         <img
                             src="https://psb4ukr.natocdn.net/images/donate.png"
                             alt="Допомога проекту"
@@ -28,5 +27,3 @@ function Contacts(): h.JSX.Element {
         </section>
     );
 }
-
-export default memo(Contacts);

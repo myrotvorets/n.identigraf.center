@@ -1,9 +1,8 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
 
 import './waitform.scss';
 
-function WaitForm(): h.JSX.Element {
+export default function WaitForm(): h.JSX.Element {
     return (
         <section className="WaitForm">
             <div className="block">
@@ -16,5 +15,3 @@ function WaitForm(): h.JSX.Element {
         </section>
     );
 }
-
-export default memo(WaitForm);

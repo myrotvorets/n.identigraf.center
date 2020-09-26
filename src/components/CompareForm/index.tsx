@@ -1,68 +1,61 @@
-import { ComponentChild, h } from 'preact';
-import { PureComponent } from 'preact/compat';
-import { Link, route } from 'preact-router';
-import { connect } from 'unistore/preact';
-import { AppState } from '../../redux/store';
+import { Component, ComponentChild, h } from 'preact';
+import { route } from 'preact-router';
 import Bugsnag from '@bugsnag/js';
+import type firebase from 'firebase';
 import Alert from '../Alert';
-import Loader from '../Loader';
+import ReadRequirements from '../ReadRequirements';
+import UploadProgress from '../UploadProgress';
+import UploadSubmitButton from '../UploadSubmitButton';
+import { withLoginCheck } from '../../hocs/withLoginCheck';
+import { CompareUploadResponse, ErrorResponse, decodeErrorResponse, decodeFirebaseError } from '../../api';
 
 import '../SearchForm/searchform.scss';
 
-type OwnProps = {};
-interface MappedProps {
-    loggedIn: boolean | null;
+interface Props {
+    user: firebase.User | null | undefined;
 }
-
-type Props = OwnProps & MappedProps;
 
 interface State {
     error: string | null;
     uploadProgress: number | null;
     hasPhoto1: boolean;
     hasPhoto2: boolean;
-    disabled: boolean;
 }
 
-interface UploadResponse {
-    success: true;
-    guid: string;
-}
-
-class CompareForm extends PureComponent<Props, State> {
+class CompareForm extends Component<Props, State> {
     public state: Readonly<State> = {
         error: null,
         uploadProgress: null,
         hasPhoto1: false,
         hasPhoto2: false,
-        disabled: false,
     };
 
-    private _onFileChange = ({ target }: Event): void => {
-        if (target) {
-            const { files, id } = target as HTMLInputElement;
-            const value = files && files.length > 0;
-            const key = 'has' + id[0].toUpperCase() + id.substring(1);
-            this.setState({ [key]: value });
-        }
+    private _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+        const { files, id } = currentTarget;
+        const value = files && files.length > 0;
+        const key = `has${id[0].toUpperCase()}${id.substring(1)}`;
+        this.setState({ [key]: value });
     };
 
     private _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        const { currentTarget: form } = e;
+        const user = this.props.user as firebase.User;
+        const data = new FormData(e.currentTarget);
 
         this.setState({ uploadProgress: 0, error: null });
-
-        const req = new XMLHttpRequest();
-        req.withCredentials = true;
-        req.upload.addEventListener('progress', this._onUploadProgress);
-        req.addEventListener('error', this._onUploadFailed);
-        req.addEventListener('abort', this._onUploadAborted);
-        req.addEventListener('timeout', this._onUploadTimeout);
-        req.addEventListener('load', this._onUploadSucceeded);
-        req.open('POST', '/api/compare/upload');
-
-        req.send(new FormData(form));
+        user.getIdToken()
+            .then((token) => {
+                const req = new XMLHttpRequest();
+                req.upload.addEventListener('progress', this._onUploadProgress);
+                req.addEventListener('error', this._onUploadFailed);
+                req.addEventListener('abort', this._onUploadAborted);
+                req.addEventListener('timeout', this._onUploadTimeout);
+                req.addEventListener('load', this._onUploadSucceeded);
+                req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/compare');
+                req.setRequestHeader('Authorization', `Bearer ${token}`);
+                req.send(data);
+            })
+            .catch((e) => this._setError(decodeFirebaseError(e.code, e.message)));
     };
 
     private _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
@@ -77,10 +70,6 @@ class CompareForm extends PureComponent<Props, State> {
             uploadProgress: progress,
         });
     };
-
-    private _setError(error: string): void {
-        this.setState({ uploadProgress: null, error });
-    }
 
     private _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
         this._setError('Помилка вивантаження файлу');
@@ -98,50 +87,33 @@ class CompareForm extends PureComponent<Props, State> {
         this.setState({ uploadProgress: 100 });
 
         const req = e.currentTarget as XMLHttpRequest;
-        if (req.status === 403) {
-            route('/logout');
-        } else if (req.status === 429) {
-            this._setError('Кількість безкоштовних спроб досягнуто. Будь ласка, спробуйте ще раз завтра.');
-        } else if (req.status === 451) {
-            this.setState({
-                uploadProgress: null,
-                error: 'Цю дію можна здійснити лише з території вільної України.',
-                disabled: true,
-            });
-        } else if (req.status !== 200) {
-            this._setError('Помилка вивантаження файлу');
-        } else {
-            try {
-                const body: UploadResponse = JSON.parse(req.responseText);
+        try {
+            const body: CompareUploadResponse | ErrorResponse = JSON.parse(req.responseText);
+            if (body.success) {
                 route(`/compare/${body.guid}`);
-            } catch (e) {
-                Bugsnag.notify(e);
-                this._setError('Несподівана помилка під час аналізу відповіді сервера');
+            } else if (req.status === 401) {
+                route('/logout');
+            } else {
+                this._setError(decodeErrorResponse(body));
             }
+        } catch (e) {
+            Bugsnag.notify(e);
+            this._setError('Несподівана помилка під час аналізу відповіді сервера');
         }
     };
 
+    private _setError(error: string): void {
+        this.setState({ uploadProgress: null, error });
+    }
+
     public render(): ComponentChild {
-        const { loggedIn } = this.props;
-        const { disabled, error, hasPhoto1, hasPhoto2, uploadProgress } = this.state;
-
-        if (loggedIn === null) {
-            return <Loader />;
-        }
-
-        if (loggedIn === false) {
-            route('/', true);
-            return null;
-        }
+        const { error, hasPhoto1, hasPhoto2, uploadProgress } = this.state;
 
         return (
             <section className="searchform">
-                <Alert className="info">
-                    <strong>Уважно</strong> прочитайте{' '}
-                    <Link href="/requirements">Вимоги до підготовки фотоматеріалів</Link>.
-                </Alert>
+                <ReadRequirements />
 
-                <form className="block" onSubmit={this._onFormSubmit}>
+                <form className="block" onSubmit={this._onFormSubmit} encType="multipart/form-data">
                     <header className="block__header">Завантажити світлину для порівняння</header>
 
                     {error && <Alert message={error} />}
@@ -152,7 +124,7 @@ class CompareForm extends PureComponent<Props, State> {
                     <input
                         type="file"
                         id="photo1"
-                        name="photo"
+                        name="photos"
                         onChange={this._onFileChange}
                         required
                         accept="image/png, image/jpeg"
@@ -166,7 +138,7 @@ class CompareForm extends PureComponent<Props, State> {
                         type="file"
                         multiple
                         id="photo2"
-                        name="photo"
+                        name="photos"
                         onChange={this._onFileChange}
                         required
                         accept="image/png, image/jpeg"
@@ -175,33 +147,16 @@ class CompareForm extends PureComponent<Props, State> {
 
                     <small>Порада: щоб вибрати кілька файлів, утримуйте клавіші Shift або Ctrl при виборі файлів</small>
 
-                    {uploadProgress !== null && (
-                        <div className="upload-progress">
-                            Завантаження:
-                            <progress max={100} value={-1 === uploadProgress ? undefined : uploadProgress} />
-                            {uploadProgress !== -1 ? <span>{uploadProgress.toFixed(2)}%</span> : undefined}
-                        </div>
-                    )}
+                    <UploadProgress progress={uploadProgress} />
 
-                    <button type="submit" disabled={!hasPhoto1 || !hasPhoto2 || uploadProgress !== null || disabled}>
-                        {uploadProgress !== null
-                            ? uploadProgress === 100
-                                ? 'Обробка зображень…'
-                                : uploadProgress > 0
-                                ? `Вивантаження (${Math.floor(uploadProgress)}%)…`
-                                : 'Вивантаження…'
-                            : 'Відправити'}
-                    </button>
+                    <UploadSubmitButton
+                        disabled={!hasPhoto1 || !hasPhoto2 || uploadProgress !== null}
+                        progress={uploadProgress}
+                    />
                 </form>
             </section>
         );
     }
 }
 
-function mapStateToProps(state: AppState): MappedProps {
-    return {
-        loggedIn: state.loggedIn,
-    };
-}
-
-export default connect<OwnProps, {}, AppState, MappedProps>(mapStateToProps)(CompareForm);
+export default withLoginCheck(CompareForm);

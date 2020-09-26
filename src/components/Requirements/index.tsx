@@ -1,7 +1,6 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
 
-function Requirements(): h.JSX.Element {
+export default function Requirements(): h.JSX.Element {
     return (
         <section className="Requirements">
             <div className="block">
@@ -141,5 +140,3 @@ function Requirements(): h.JSX.Element {
         </section>
     );
 }
-
-export default memo(Requirements);

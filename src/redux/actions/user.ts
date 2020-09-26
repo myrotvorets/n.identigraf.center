@@ -1,13 +1,8 @@
+import firebase from 'firebase/app';
 import { AppState } from '../store';
 
-export function setLoggedIn(): Partial<AppState> {
+export function setUser(state: AppState, user: firebase.User | null): Partial<AppState> {
     return {
-        loggedIn: true,
-    };
-}
-
-export function setLoggedOut(): Partial<AppState> {
-    return {
-        loggedIn: false,
+        user,
     };
 }

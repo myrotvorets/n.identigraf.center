@@ -28,9 +28,9 @@
         <meta name="msapplication-TileImage" content="<%= require('./assets/icon270.png') %>" />
         <meta name="theme-color" content="#000100" />
         <style>
-            <%- require('!!css-loader!sass-loader!./components/App/critical.scss') _%><%_
-            _%><%- require('!!css-loader!sass-loader!./components/Header/header.scss') _%><%_
-            _%><%- require('!!css-loader!sass-loader!./components/Footer/footer.scss') _%>
+            <%- require('!!css-loader?esModule=false!sass-loader!./components/App/critical.scss') _%><%_
+            _%><%- require('!!css-loader?esModule=false!sass-loader!./components/Header/header.scss') _%><%_
+            _%><%- require('!!css-loader?esModule=false!sass-loader!./components/Footer/footer.scss') _%>
         </style>
         <link rel="manifest" href="<%= require('./assets/manifest.json') %>" />
     </head>

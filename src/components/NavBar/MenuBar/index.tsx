@@ -1,11 +1,10 @@
-import { ComponentChild, h } from 'preact';
-import { PureComponent } from 'preact/compat';
+import { Component, ComponentChild, h } from 'preact';
 
 interface State {
     open: boolean;
 }
 
-export default class MenuBar extends PureComponent<{}, State> {
+export default class MenuBar extends Component<unknown, State> {
     public state: Readonly<State> = {
         open: false,
     };
@@ -28,7 +27,13 @@ export default class MenuBar extends PureComponent<{}, State> {
         const { open } = this.state;
         return (
             <nav className="nav" onMouseLeave={this._onMouseLeaveHandler}>
-                <label className="nav__btn" onClick={this._onMenuOpenClicked}>
+                <button
+                    className="nav__btn"
+                    onClick={this._onMenuOpenClicked}
+                    aria-label="Перемикання навігації"
+                    aria-expanded={open ? 'true' : 'false'}
+                    aria-controls="navbar-content"
+                >
                     <svg width="34" height="34">
                         <path
                             d="M0 28.332h34v-3.777H0zm0-9.441h34v-3.782H0zM0 5.668v3.777h34V5.668"
@@ -36,7 +41,7 @@ export default class MenuBar extends PureComponent<{}, State> {
                             fill="#FFF"
                         />
                     </svg>
-                </label>
+                </button>
                 <ul className={`nav__menu${open ? ' nav__menu--open' : ''}`}>{this.props.children}</ul>
             </nav>
         );

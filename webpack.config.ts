@@ -5,9 +5,11 @@ export default function (env: Record<string, any>, args: Record<string, any>): w
     let config: webpack.Configuration;
     if (args.mode && args.mode === 'production') {
         process.env.NODE_ENV = 'production';
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         config = require(`./.webpack/webpack.production.ts`).default();
     } else {
         process.env.NODE_ENV = 'development';
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         config = require(`./.webpack/webpack.development.ts`).default();
     }
 

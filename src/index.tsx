@@ -20,18 +20,23 @@ if (!process.env.BUILD_SSR) {
         process.env.NODE_ENV === 'production' &&
         !/^(127|192\.168|10)\./.test(window.location.hostname)
     ) {
-        navigator.serviceWorker.register('/sw.js').then((reg) => {
-            // eslint-disable-next-line no-param-reassign
-            reg.onupdatefound = (): void => {
-                const installingWorker = reg.installing;
-                if (installingWorker) {
-                    installingWorker.onstatechange = (): void => {
-                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            reg.update();
-                        }
-                    };
-                }
-            };
-        });
+        navigator.serviceWorker
+            .register('/sw.js')
+            .then((reg: ServiceWorkerRegistration): void => {
+                // eslint-disable-next-line no-param-reassign
+                reg.onupdatefound = (): void => {
+                    const installingWorker = reg.installing;
+                    if (installingWorker) {
+                        installingWorker.onstatechange = (): void => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                reg.update();
+                            }
+                        };
+                    }
+                };
+            })
+            .catch((): void => {
+                /* Do nothing */
+            });
     }
 }

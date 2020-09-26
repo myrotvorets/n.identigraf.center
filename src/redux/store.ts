@@ -1,11 +1,12 @@
 import createStore from 'unistore';
+import type firebase from 'firebase';
 
 export interface AppState {
-    loggedIn: boolean | null;
+    user: firebase.User | null | undefined;
 }
 
 const initialState: AppState = {
-    loggedIn: null,
+    user: undefined,
 };
 
 export default createStore(initialState);

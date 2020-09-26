@@ -17,9 +17,6 @@
         &:first-child {
             border-top-left-radius: .4rem;
             border-top-right-radius: .4rem;
-            position: sticky;
-            top: 1em;
-            z-index: 100;
         }
 
         &:last-child {

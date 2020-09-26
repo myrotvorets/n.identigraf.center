@@ -1,16 +1,9 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
-
-export interface RecognizedFace {
-    index: number;
-    minSimilarity: number;
-    maxSimilarity: number;
-    face: string;
-}
+import { CapturedFace as RecognizedFace } from '../../api';
 
 type Props = RecognizedFace;
 
-function CapturedFace({ minSimilarity, maxSimilarity, face }: Props): h.JSX.Element {
+export default function CapturedFace({ minSimilarity, maxSimilarity, face }: Props): h.JSX.Element {
     return (
         <div className="recognized-face">
             <h4 className="d-sm-none">Розпізнане обличчя</h4>
@@ -21,5 +14,3 @@ function CapturedFace({ minSimilarity, maxSimilarity, face }: Props): h.JSX.Elem
         </div>
     );
 }
-
-export default memo(CapturedFace);

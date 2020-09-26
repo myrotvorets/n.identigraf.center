@@ -1,8 +1,8 @@
-import { ComponentChild, Fragment, h } from 'preact';
-import { PureComponent } from 'preact/compat';
-import API, { MatchedFaceFailure, MatchedFaceResponse, MatchedFaceSuccess } from '../../api';
+import { Component, ComponentChild, Fragment, h } from 'preact';
+import API, { MatchedFace as FoundFace, CapturedFace as RecognizedFace, decodeErrorResponse } from '../../api';
 import SmallLoader from '../SmallLoader';
-import CapturedFace, { RecognizedFace } from '../CapturedFace';
+import Alert from '../Alert';
+import CapturedFace from '../CapturedFace';
 import MatchedFace from '../MatchedFace';
 import WaitForm from '../WaitForm';
 
@@ -17,25 +17,21 @@ interface Props {
     guid: string;
 }
 
-type TheState = 'check' | 'get_captured' | 'get_matched' | 'done' | 'failure';
+type TheState = 'check' | 'done';
 
 interface State {
     state: TheState;
-    counts: number[];
-    jpeg: string;
-    webp: string;
+    error: string;
     capturedFaces: RecognizedFace[];
-    matchedFaces: MatchedFaceResponse;
+    matchedFaces: (FoundFace[] | null)[];
 }
 
-export default class SearchResults extends PureComponent<Props, State> {
+export default class SearchResults extends Component<Props, State> {
     public state: Readonly<State> = {
         state: 'check',
-        counts: [],
-        jpeg: '',
-        webp: '',
+        error: '',
         capturedFaces: [],
-        matchedFaces: {},
+        matchedFaces: [],
     };
 
     private _timerId: number | null = null;
@@ -57,73 +53,61 @@ export default class SearchResults extends PureComponent<Props, State> {
         }
     }
 
-    private _onImageLoadFailed = (): void => {
-        if (this.state.webp.length) {
-            this.setState({ webp: '' });
-        } else {
-            this.setState({ jpeg: '' });
-        }
-    };
-
     private _checkStatus = (): void => {
         this._timerId = null;
 
         const { guid } = this.props;
         API.checkSearchStatus(guid).then((r): void => {
-            switch (r.status) {
-                case 'success':
-                    this.setState({ state: 'get_captured', counts: r.counts, jpeg: r.pathJ, webp: r.pathW });
-                    this._getCapturedFaces(guid);
-                    break;
-
-                case 'failed':
-                    this.setState({ state: 'failure' });
-                    break;
-
-                case 'inprogress':
+            if (r.success) {
+                if (r.status === 'inprogress') {
                     this._timerId = self.setTimeout(this._checkStatus, 2_000);
-                    break;
+                } else {
+                    this.setState({ capturedFaces: r.faces }, () => this._getMatchedFaces());
+                }
+            } else {
+                this.setState({ state: 'done', error: decodeErrorResponse(r) });
             }
         });
     };
 
-    private _getCapturedFaces(guid: string): void {
-        API.getCapturedFaces(guid).then((r): void => {
-            if (r.status === 'inprogress') {
-                console.warn('WARNING: getCapturedFaces() unexpectly returned INPROGRESS response');
-                this.setState({ state: 'check' });
-            } else if (r.status === 'failed') {
-                this.setState({ state: 'failure' });
-            } else {
-                this.setState({ state: 'get_matched', capturedFaces: r.faces });
-                this._getMatchedFaces(guid, this.state.counts.length);
-            }
-        });
+    private _addMatches(matches: FoundFace[] | null) {
+        this.setState((prevState) => ({ matchedFaces: [...prevState.matchedFaces, matches] }));
     }
 
-    private _getMatchedFaces(guid: string, count: number): void {
-        API.getMatchedFaces(guid, count).then((r): void => {
-            this.setState({
-                state: 'done',
-                matchedFaces: r,
-            });
-        });
+    private async _getMatchedFaces(): Promise<void> {
+        const { guid } = this.props;
+        const { capturedFaces } = this.state;
+
+        for (const { faceID } of capturedFaces) {
+            const response = await API.getMatchedFaces(guid, faceID);
+            const matches = response.success ? response.matches : null;
+            this._addMatches(matches);
+        }
+
+        this.setState({ state: 'done' });
     }
 
-    private _renderMatchedFace(face: MatchedFaceSuccess | MatchedFaceFailure, index: number): ComponentChild {
-        return <li key={index}>{'status' in face ? <p>Помилка!</p> : <MatchedFace {...face} />}</li>;
+    private _renderMatchedFace(face: FoundFace, index: number): ComponentChild {
+        return (
+            <li key={index}>
+                <MatchedFace {...face} />
+            </li>
+        );
     }
 
-    private _renderMatchedFaces(index: number): ComponentChild {
-        const { matchedFaces, state } = this.state;
+    private _renderMatchedFaces(faceID: number, index: number): ComponentChild {
+        const { matchedFaces } = this.state;
+        const faces = matchedFaces[index];
         return (
             <div className="matched-faces">
-                {state === 'get_matched' ? (
+                {faces === undefined ? (
                     <SmallLoader />
-                ) : matchedFaces[index].length ? (
+                ) : faces === null ? (
+                    <p>Помилка!</p>
+                ) : faces.length > 0 ? (
                     <Fragment>
                         <h4 className="d-sm-none">Збіги</h4>
-                        <ol>{matchedFaces[index].map(this._renderMatchedFace)}</ol>
+                        <ol>{faces.map(this._renderMatchedFace)}</ol>
                     </Fragment>
                 ) : (
                     <p>Збігів немає</p>
@@ -132,25 +116,25 @@ export default class SearchResults extends PureComponent<Props, State> {
         );
     }
 
-    private _renderCapturedFace(face: RecognizedFace): ComponentChild {
+    private _renderCapturedFace(face: RecognizedFace, index: number): ComponentChild {
         return (
-            <div className="card" key={face.index}>
-                <header className="card__header">Обличчя {face.index}</header>
+            <div className="card" key={face.faceID}>
+                <header className="card__header">Обличчя {index + 1}</header>
                 <div className="row">
                     <CapturedFace {...face} />
 
-                    {this._renderMatchedFaces(face.index)}
+                    {this._renderMatchedFaces(face.faceID, index)}
                 </div>
             </div>
         );
     }
 
     private _renderCapturedFaces(): ComponentChild {
-        const { capturedFaces, counts, state } = this.state;
-        return counts.length ? (
+        const { capturedFaces } = this.state;
+        return capturedFaces.length ? (
             <div className="results">
                 <h3>Результати пошуку</h3>
-                {state === 'get_captured' ? <SmallLoader /> : capturedFaces.map(this._renderCapturedFace, this)}
+                {capturedFaces.map(this._renderCapturedFace, this)}
             </div>
         ) : (
             <div className="results">
@@ -162,23 +146,18 @@ export default class SearchResults extends PureComponent<Props, State> {
     }
 
     private _renderResults(): ComponentChild {
-        const { counts, jpeg, webp } = this.state;
+        const { guid } = this.props;
+        const { capturedFaces } = this.state;
         return (
             <section className="SearchResults">
                 <div className="block">
-                    <header className="block__header">Облич розпізнано на фото: {counts.length}</header>
+                    <header className="block__header">Облич розпізнано на фото: {capturedFaces.length}</header>
 
-                    {jpeg.length ? (
-                        <picture>
-                            {webp.length ? <source type="image/webp" srcSet={webp} /> : null}
-                            <img
-                                src={jpeg}
-                                alt="Завантажена світлина"
-                                className="uploadedPhoto"
-                                onError={this._onImageLoadFailed}
-                            />
-                        </picture>
-                    ) : null}
+                    <img
+                        src={`https://api2.myrotvorets.center/identigraf-upload/v1/get/${guid}`}
+                        alt="Завантажена світлина"
+                        className="uploadedPhoto"
+                    />
 
                     {this._renderCapturedFaces()}
                 </div>
@@ -187,9 +166,13 @@ export default class SearchResults extends PureComponent<Props, State> {
     }
 
     public render(): ComponentChild {
-        const { state } = this.state;
+        const { error, state } = this.state;
         if (state === 'check') {
             return <WaitForm />;
+        }
+
+        if (error) {
+            return <Alert message={error} />;
         }
 
         return this._renderResults();

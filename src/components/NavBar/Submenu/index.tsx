@@ -1,5 +1,4 @@
-import { ComponentChild, h } from 'preact';
-import { PureComponent } from 'preact/compat';
+import { Component, ComponentChild, h } from 'preact';
 
 interface Props {
     title: string;
@@ -9,7 +8,7 @@ interface State {
     open: boolean;
 }
 
-export default class Submenu extends PureComponent<Props, State> {
+export default class Submenu extends Component<Props, State> {
     public state: Readonly<State> = {
         open: false,
     };
@@ -66,7 +65,10 @@ export default class Submenu extends PureComponent<Props, State> {
                 onMouseLeave={this._onMouseLeaveHandler}
                 onClickCapture={this._onClickCaptureHandler}
             >
-                <a href="#">{title}</a>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a href="#" role="button" aria-haspopup="true" aria-expanded={open ? 'true' : 'false'}>
+                    {title}
+                </a>
                 <ul className="nav__submenu">{children}</ul>
             </li>
         );

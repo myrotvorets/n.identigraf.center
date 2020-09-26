@@ -1,164 +1,82 @@
 import Bugsnag from '@bugsnag/js';
-
-interface InProgressResponse {
-    status: 'inprogress';
-}
-
-interface FailedResponse {
-    status: 'failed';
-}
-
-interface SearchCompletedResponse {
-    status: 'success';
-    counts: number[];
-    pathJ: string;
-    pathW: string;
-}
-
-interface Face {
-    index: number;
-    minSimilarity: number;
-    maxSimilarity: number;
-    face: string;
-}
-
-interface CapturedFacesSuccessResponse {
-    status: 'success';
-    faces: Face[];
-}
-
-export interface MatchedFaceSuccess {
-    similarity: number;
-    face: string;
-    name: string;
-    link: string;
-    country: string;
-    mphoto: string;
-    pphoto: string;
-}
-
-export interface MatchedFaceFailure {
-    status: 'failed';
-}
-
-interface CompareCompletedResponse {
-    status: 'success';
-    results: Record<string, [string, string, number]>;
-}
-
-type CheckSearchStatusResponse = InProgressResponse | FailedResponse | SearchCompletedResponse;
-type CheckCompareStatusResponse = InProgressResponse | FailedResponse | CompareCompletedResponse;
-type CapturedFacesResponse = InProgressResponse | FailedResponse | CapturedFacesSuccessResponse;
-export type MatchedFaceResponse = Record<number, (MatchedFaceSuccess | MatchedFaceFailure)[]>;
+import type {
+    CheckPhoneResponse,
+    CompareStatusResponse,
+    ErrorResponse,
+    LoginResponse,
+    MatchedFacesResponse,
+    SearchStatusResponse,
+} from './types';
+export { decodeErrorCode, decodeErrorResponse, decodeFirebaseError } from './errors';
+export * from './types';
 
 export default class API {
-    public static async startSession(token: string): Promise<string> {
-        try {
-            const r = await fetch('/api/user/startSession', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token }),
+    public static checkPhone(phone: string): Promise<CheckPhoneResponse | ErrorResponse> {
+        return API.post('/identigraf-auth/v2/checkphone', { phone });
+    }
+
+    public static login(token: string): Promise<LoginResponse | ErrorResponse> {
+        return API.post('/identigraf-auth/v2/login', undefined, token);
+    }
+
+    public static checkCompareStatus(guid: string): Promise<CompareStatusResponse | ErrorResponse> {
+        return API.get(`/identigraf/v2/compare/${guid}`);
+    }
+
+    public static checkSearchStatus(guid: string): Promise<SearchStatusResponse | ErrorResponse> {
+        return API.get(`/identigraf/v2/search/${guid}`);
+    }
+
+    public static getMatchedFaces(guid: string, faceID: number): Promise<MatchedFacesResponse | ErrorResponse> {
+        return API.get(`/identigraf/v2/search/${guid}/matches/${faceID}/0/20`);
+    }
+
+    private static post<R>(endpoint: string, body: unknown, auth?: string): Promise<R | ErrorResponse> {
+        const headers: Record<string, string> = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        };
+
+        if (auth) {
+            headers.Authorization = `Bearer ${auth}`;
+        }
+
+        return fetch(`https://api2.myrotvorets.center${endpoint}`, {
+            method: 'POST',
+            headers,
+            body: body !== undefined ? JSON.stringify(body) : undefined,
+        })
+            .then((response) => response.json())
+            .catch((e) => {
+                Bugsnag.notify(e);
+                return {
+                    success: false,
+                    status: 502,
+                    code: 'COMM_ERROR',
+                    message: 'Помилка спілкування з сервером',
+                };
             });
-
-            if (r.ok) {
-                return '+';
-            }
-
-            if (r.status === 403) {
-                const json = await r.json();
-                return 'reason' in json ? json.reason : '-';
-            }
-
-            if (r.status === 429) {
-                return 'Z';
-            }
-
-            return '-';
-        } catch (e) {
-            Bugsnag.notify(e);
-            return '-';
-        }
     }
 
-    public static async checkSession(): Promise<string> {
-        try {
-            const r = await fetch('/api/user/verify', {
-                method: 'POST',
-                credentials: 'include',
+    private static get<R>(endpoint: string, auth?: string): Promise<R | ErrorResponse> {
+        const headers: Record<string, string> = {
+            Accept: 'application/json',
+        };
+
+        if (auth) {
+            headers.Authorization = `Bearer ${auth}`;
+        }
+
+        return fetch(`https://api2.myrotvorets.center${endpoint}`, { headers })
+            .then((response) => response.json())
+            .catch((e) => {
+                Bugsnag.notify(e);
+                return {
+                    success: false,
+                    status: 502,
+                    code: 'COMM_ERROR',
+                    message: 'Помилка спілкування з сервером',
+                };
             });
-
-            switch (r.status) {
-                case 204:
-                    return '+';
-                case 403:
-                    return 'A';
-                default:
-                    return '-';
-            }
-        } catch (e) {
-            Bugsnag.notify(e);
-            return '-';
-        }
-    }
-
-    public static async logout(): Promise<boolean> {
-        try {
-            const r = await fetch('/api/user/logout', {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            return r.ok;
-        } catch (e) {
-            Bugsnag.notify(e);
-            return false;
-        }
-    }
-
-    public static async checkSearchStatus(guid: string): Promise<CheckSearchStatusResponse> {
-        try {
-            const r = await fetch(`/api/search/status/${guid}`);
-            return await r.json();
-        } catch (e) {
-            Bugsnag.notify(e);
-            return { status: 'failed' };
-        }
-    }
-
-    public static async getCapturedFaces(guid: string): Promise<CapturedFacesResponse> {
-        try {
-            const r = await fetch(`/api/search/captured/${guid}`);
-            return await r.json();
-        } catch (e) {
-            Bugsnag.notify(e);
-            return { status: 'failed' };
-        }
-    }
-
-    public static async getMatchedFaces(guid: string, count: number): Promise<MatchedFaceResponse> {
-        try {
-            const r = await fetch(`/api/search/matched/${guid}/${count}`);
-            return await r.json();
-        } catch (e) {
-            Bugsnag.notify(e);
-            const result: MatchedFaceResponse = {};
-            for (let i = 1; i <= count; ++i) {
-                result[i] = [{ status: 'failed' }];
-            }
-
-            return result;
-        }
-    }
-
-    public static async checkCompareStatus(guid: string): Promise<CheckCompareStatusResponse> {
-        try {
-            const r = await fetch(`/api/compare/status/${guid}`);
-            return await r.json();
-        } catch (e) {
-            Bugsnag.notify(e);
-            return { status: 'failed' };
-        }
     }
 }

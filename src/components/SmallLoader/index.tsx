@@ -1,6 +1,6 @@
 import { h } from 'preact';
-import logo from '../../assets/identigraf-logo.svg';
 
+import logo from '../../assets/identigraf-logo.svg';
 import './smallloader.scss';
 
 interface Props {

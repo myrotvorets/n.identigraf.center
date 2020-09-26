@@ -32,19 +32,5 @@
             max-height: 100%;
             align-self: center;
         }
-
-        .upload-progress {
-            display: flex;
-            align-items: center;
-
-            progress {
-                flex-grow: 1;
-                margin: 0 5px;
-
-                &:last-child {
-                    margin-right: 0;
-                }
-            }
-        }
     }
 }
