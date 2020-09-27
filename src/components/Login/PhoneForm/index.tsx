@@ -18,6 +18,11 @@ export default class PhoneForm extends Component<Props, State> {
         return phone.replace(/[^0-9]/g, '').match(/^[0-9]{9}$/) !== null;
     }
 
+    public state: Readonly<State> = {
+        agreed: false,
+        phone: '',
+    };
+
     private _buttonRef: RefObject<HTMLButtonElement> = createRef();
     private _inputRef: RefObject<HTMLInputElement> = createRef();
     private _verifier?: firebase.auth.RecaptchaVerifier;
