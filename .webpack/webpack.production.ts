@@ -19,7 +19,7 @@ export default function (): webpack.Configuration {
         module: {
             rules: [
                 {
-                    test: /\.s?css$/,
+                    test: /\.s?css$/u,
                     loaders: [
                         MiniCssExtractPlugin.loader,
                         {
@@ -54,7 +54,7 @@ export default function (): webpack.Configuration {
                 paths: glob.sync(`${path.join(__dirname, '../src')}/**/*`, {
                     nodir: true,
                 }),
-                safelist: [/wa-mediabox/],
+                safelist: [/wa-mediabox/u],
             }),
             new MiniCssExtractPlugin({
                 filename: '[name].[contenthash:5].min.css',

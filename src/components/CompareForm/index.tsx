@@ -7,7 +7,13 @@ import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
 import UploadSubmitButton from '../UploadSubmitButton';
 import { withLoginCheck } from '../../hocs/withLoginCheck';
-import { CompareUploadResponse, ErrorResponse, decodeErrorResponse, decodeFirebaseError } from '../../api';
+import {
+    CompareUploadResponse,
+    ErrorResponse,
+    FirebaseError,
+    decodeErrorResponse,
+    decodeFirebaseError,
+} from '../../api';
 
 import '../SearchForm/searchform.scss';
 
@@ -30,14 +36,14 @@ class CompareForm extends Component<Props, State> {
         hasPhoto2: false,
     };
 
-    private _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    private readonly _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { files, id } = currentTarget;
         const value = files && files.length > 0;
         const key = `has${id[0].toUpperCase()}${id.substring(1)}`;
         this.setState({ [key]: value });
     };
 
-    private _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
+    private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
         e.preventDefault();
         const user = this.props.user as firebase.User;
         const data = new FormData(e.currentTarget);
@@ -55,10 +61,10 @@ class CompareForm extends Component<Props, State> {
                 req.setRequestHeader('Authorization', `Bearer ${token}`);
                 req.send(data);
             })
-            .catch((e) => this._setError(decodeFirebaseError(e.code, e.message)));
+            .catch((e: FirebaseError) => this._setError(decodeFirebaseError(e.code, e.message)));
     };
 
-    private _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
+    private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
         let progress: number;
         if (e.lengthComputable) {
             progress = (e.loaded / e.total) * 100;
@@ -71,24 +77,24 @@ class CompareForm extends Component<Props, State> {
         });
     };
 
-    private _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
+    private readonly _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
         this._setError('Помилка вивантаження файлу');
     };
 
-    private _onUploadAborted = (): void => {
+    private readonly _onUploadAborted = (): void => {
         this._setError('Вивантаження перервано');
     };
 
-    private _onUploadTimeout = (): void => {
+    private readonly _onUploadTimeout = (): void => {
         this._setError('Час очікування вивантаження вичерпано');
     };
 
-    private _onUploadSucceeded = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
+    private readonly _onUploadSucceeded = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
         this.setState({ uploadProgress: 100 });
 
         const req = e.currentTarget as XMLHttpRequest;
         try {
-            const body: CompareUploadResponse | ErrorResponse = JSON.parse(req.responseText);
+            const body = JSON.parse(req.responseText) as CompareUploadResponse | ErrorResponse;
             if (body.success) {
                 route(`/compare/${body.guid}`);
             } else if (req.status === 401) {

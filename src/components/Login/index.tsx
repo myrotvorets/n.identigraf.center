@@ -3,10 +3,11 @@ import { route } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
 import firebase from 'firebase/app';
 import { ActionMap } from 'unistore';
+import Bugsnag from '@bugsnag/js';
 import Loader from '../Loader';
 import { AppState } from '../../redux/store';
 import { setUser } from '../../redux/actions';
-import API, { decodeErrorResponse, decodeFirebaseError } from '../../api';
+import API, { FirebaseError, decodeErrorResponse, decodeFirebaseError } from '../../api';
 import CodeForm from './CodeForm';
 import PhoneForm from './PhoneForm';
 
@@ -42,7 +43,7 @@ class Login extends Component<Props, State> {
         error: null,
     };
 
-    private _onCodeFormSubmit = async (code: string): Promise<void> => {
+    private readonly _onCodeFormSubmit = async (code: string): Promise<void> => {
         const { confirmation } = this.state;
         if (!confirmation) {
             return;
@@ -64,12 +65,18 @@ class Login extends Component<Props, State> {
                 });
             }
         } catch (e) {
-            this.setState({ error: decodeFirebaseError(e.code, e.message), state: 'idle' });
+            this.setState({
+                error: decodeFirebaseError((e as FirebaseError).code, (e as FirebaseError).message),
+                state: 'idle',
+            });
         }
     };
 
-    private _onPhoneFormSubmit = async (phone: string, verifier: firebase.auth.RecaptchaVerifier): Promise<void> => {
-        const ph = `+380${phone.replace(/[^0-9]/g, '')}`;
+    private readonly _onPhoneFormSubmit = async (
+        phone: string,
+        verifier: firebase.auth.RecaptchaVerifier,
+    ): Promise<void> => {
+        const ph = `+380${phone.replace(/[^0-9]/gu, '')}`;
 
         this.setState({ state: 'busy', phone });
         const response = await API.checkPhone(ph);
@@ -78,9 +85,15 @@ class Login extends Component<Props, State> {
                 const result = await firebase.auth().signInWithPhoneNumber(ph, verifier);
                 this.setState({ confirmation: result, error: null, state: 'idle' });
             } catch (e) {
-                this.setState({ state: 'idle', error: decodeFirebaseError(e.code, e.message) });
-                // eslint-disable-next-line no-undef
-                verifier.render().then((widgetId) => grecaptcha?.reset(widgetId));
+                this.setState({
+                    state: 'idle',
+                    error: decodeFirebaseError((e as FirebaseError).code, (e as FirebaseError).message),
+                });
+                /* global grecaptcha */
+                verifier
+                    .render()
+                    .then((widgetId) => grecaptcha?.reset(widgetId))
+                    .catch((e) => Bugsnag.notify(e));
             }
         } else {
             this.setState({
@@ -90,7 +103,7 @@ class Login extends Component<Props, State> {
         }
     };
 
-    private _onResetCodeForm = (): void => {
+    private readonly _onResetCodeForm = (): void => {
         this.setState({
             error: null,
             state: 'idle',

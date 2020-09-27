@@ -7,7 +7,13 @@ import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
 import UploadSubmitButton from '../UploadSubmitButton';
 import { withLoginCheck } from '../../hocs/withLoginCheck';
-import { ErrorResponse, SearchUploadResponse, decodeErrorResponse, decodeFirebaseError } from '../../api';
+import {
+    ErrorResponse,
+    FirebaseError,
+    SearchUploadResponse,
+    decodeErrorResponse,
+    decodeFirebaseError,
+} from '../../api';
 
 import './searchform.scss';
 
@@ -28,7 +34,7 @@ class SearchForm extends Component<Props, State> {
         error: null,
     };
 
-    private _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    private readonly _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         this.setState({ error: null });
         const { files } = currentTarget;
         const f = files?.[0];
@@ -44,7 +50,7 @@ class SearchForm extends Component<Props, State> {
         }
     };
 
-    private _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
+    private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
         e.preventDefault();
         const user = this.props.user as firebase.User;
         const data = new FormData(e.currentTarget);
@@ -62,31 +68,31 @@ class SearchForm extends Component<Props, State> {
                 req.setRequestHeader('Authorization', `Bearer ${token}`);
                 req.send(data);
             })
-            .catch((e) => this._setError(decodeFirebaseError(e.code, e.message)));
+            .catch((e: FirebaseError) => this._setError(decodeFirebaseError(e.code, e.message)));
     };
 
-    private _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
+    private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
         const progress = e.lengthComputable ? (e.loaded / e.total) * 100 : -1;
         this.setState({ uploadProgress: progress });
     };
 
-    private _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
+    private readonly _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
         this._setError('Помилка вивантаження файлу');
     };
 
-    private _onUploadTimeout = (): void => {
+    private readonly _onUploadTimeout = (): void => {
         this._setError('Час очікування вивантаження вичерпано');
     };
 
-    private _onUploadAborted = (): void => {
+    private readonly _onUploadAborted = (): void => {
         this._setError('Вивантаження перервано');
     };
 
-    private _onUploadSucceeded = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
+    private readonly _onUploadSucceeded = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
         this.setState({ uploadProgress: 100 });
         const req = e.currentTarget as XMLHttpRequest;
         try {
-            const body: SearchUploadResponse | ErrorResponse = JSON.parse(req.responseText);
+            const body = JSON.parse(req.responseText) as SearchUploadResponse | ErrorResponse;
             if (body.success) {
                 route(`/search/${body.guid}`);
             } else if (req.status === 401) {

@@ -38,11 +38,14 @@ export default class CompareResults extends Component<Props, State> {
         }
     }
 
-    private _checkStatus = (): void => {
+    private readonly _checkStatus = (): void => {
         this._timerId = null;
 
         const { guid } = this.props;
-        API.checkCompareStatus(guid).then((r): void => {
+
+        /* checkCompareStatus() cannot fail */
+        // eslint-disable-next-line no-void
+        void API.checkCompareStatus(guid).then((r): void => {
             if (r.success) {
                 if (r.status === 'inprogress') {
                     this._timerId = self.setTimeout(this._checkStatus, 1_000);
@@ -59,7 +62,7 @@ export default class CompareResults extends Component<Props, State> {
         });
     };
 
-    private _renderPhoto(similarity: number, index: number): ComponentChild {
+    private readonly _renderPhoto = (similarity: number, index: number): ComponentChild => {
         const { guid } = this.props;
         return (
             <li key={index}>
@@ -73,7 +76,7 @@ export default class CompareResults extends Component<Props, State> {
                 </p>
             </li>
         );
-    }
+    };
 
     private _renderResults(): ComponentChild {
         const { guid } = this.props;
@@ -98,7 +101,7 @@ export default class CompareResults extends Component<Props, State> {
                                 aria-describedby="#source-photo"
                             />
                         </li>
-                        {results.map(this._renderPhoto, this)}
+                        {results.map(this._renderPhoto)}
                     </ul>
                 </div>
             </section>

@@ -10,7 +10,7 @@ export default function (): webpack.Configuration {
         module: {
             rules: [
                 {
-                    test: /\.s?css$/,
+                    test: /\.s?css$/u,
                     loaders: ['style-loader', 'css-loader', 'sass-loader'],
                 },
             ],

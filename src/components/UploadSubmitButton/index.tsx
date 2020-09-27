@@ -1,5 +1,6 @@
 import { h } from 'preact';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 interface Props extends h.JSX.HTMLAttributes {
     progress: number | null;
 }

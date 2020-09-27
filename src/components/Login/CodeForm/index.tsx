@@ -14,14 +14,14 @@ interface State {
 
 export default class CodeForm extends Component<Props> {
     private static isCodeValid(code: string): boolean {
-        return /^[0-9]{6}$/.test(code);
+        return /^[0-9]{6}$/u.test(code);
     }
 
     public state: Readonly<State> = {
         code: '',
     };
 
-    private _inputRef: RefObject<HTMLInputElement> = createRef();
+    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
 
     public componentDidMount(): void {
         this._inputRef.current?.focus();
@@ -31,17 +31,17 @@ export default class CodeForm extends Component<Props> {
         this._inputRef.current?.focus();
     }
 
-    private _onResetClicked = (e: Event): void => {
+    private readonly _onResetClicked = (e: Event): void => {
         e.preventDefault();
         this.props.onReset();
     };
 
-    private _onCodeFormSubmit = (e: Event): void => {
+    private readonly _onCodeFormSubmit = (e: Event): void => {
         e.preventDefault();
         this.props.onCodeSubmit(this.state.code);
     };
 
-    private _onInputChanged = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    private readonly _onInputChanged = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { value } = currentTarget;
         this.setState({ code: value });
     };
@@ -59,7 +59,7 @@ export default class CodeForm extends Component<Props> {
                     Будь ласка, введіть 6-значний код, який ми надіслали на номер{' '}
                     {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a href="#" onClick={this._onResetClicked} role="button">
-                        +380{phone.replace(/[^0-9]/g, '')}
+                        +380{phone.replace(/[^0-9]/gu, '')}
                     </a>
                 </p>
 

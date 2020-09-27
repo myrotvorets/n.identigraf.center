@@ -10,7 +10,7 @@ interface Props {
 export default function SmallLoader({ width }: Props): h.JSX.Element {
     return (
         <div className="SmallLoader">
-            <img src={logo} alt="Зачекайте…" width={width} />
+            <img src={logo as string} alt="Зачекайте…" width={width} />
         </div>
     );
 }

@@ -15,7 +15,7 @@ interface State {
 
 export default class PhoneForm extends Component<Props, State> {
     private static isPhoneValid(phone: string): boolean {
-        return phone.replace(/[^0-9]/g, '').match(/^[0-9]{9}$/) !== null;
+        return /^[0-9]{9}$/u.exec(phone.replace(/[^0-9]/gu, '')) !== null;
     }
 
     public state: Readonly<State> = {
@@ -23,8 +23,8 @@ export default class PhoneForm extends Component<Props, State> {
         phone: '',
     };
 
-    private _buttonRef: RefObject<HTMLButtonElement> = createRef();
-    private _inputRef: RefObject<HTMLInputElement> = createRef();
+    private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
+    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
     private _verifier?: firebase.auth.RecaptchaVerifier;
 
     public componentDidMount(): void {
@@ -38,17 +38,17 @@ export default class PhoneForm extends Component<Props, State> {
         this._inputRef.current?.focus();
     }
 
-    private _onAcceptClicked = (e: Event): void => {
+    private readonly _onAcceptClicked = (e: Event): void => {
         e.preventDefault();
         this.setState((prevState: Readonly<State>): Partial<State> => ({ agreed: !prevState.agreed }));
     };
 
-    private _onInputChanged = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    private readonly _onInputChanged = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { value } = currentTarget;
         this.setState({ phone: value });
     };
 
-    private _onPhoneFormSubmit = (e: Event): void => {
+    private readonly _onPhoneFormSubmit = (e: Event): void => {
         e.preventDefault();
         const { agreed, phone } = this.state;
         if (agreed && PhoneForm.isPhoneValid(phone)) {

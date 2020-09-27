@@ -48,14 +48,14 @@ const config: webpack.Configuration = {
         rules: [
             {
                 enforce: 'pre',
-                test: /\.tsx?$/,
-                exclude: /node_modules/,
+                test: /\.tsx?$/u,
+                exclude: /node_modules/u,
                 use: {
                     loader: 'babel-loader',
                 },
             },
             {
-                test: /\.(svg|png)$/,
+                test: /\.(svg|png)$/u,
                 loader: 'file-loader',
                 options: {
                     name: '[name].[contenthash:5].[ext]',
@@ -63,8 +63,8 @@ const config: webpack.Configuration = {
                 },
             },
             {
-                test: /\.json$/,
-                issuer: /\.html$/,
+                test: /\.json$/u,
+                issuer: /\.html$/u,
                 type: 'javascript/auto',
                 use: [
                     {
@@ -114,10 +114,10 @@ const config: webpack.Configuration = {
         }),
         new InjectManifest({
             swSrc: './src/sw.ts',
-            include: ['index.html', /\.js$/, /\.svg$/, /\.css$/],
+            include: ['index.html', /\.js$/u, /\.svg$/u, /\.css$/u],
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(js|css)/,
+            dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(js|css)/u,
         }),
         new ServiceWorkerPlugin(),
         new HwpAttributesPlugin({

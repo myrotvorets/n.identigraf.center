@@ -18,7 +18,7 @@ if (!process.env.BUILD_SSR) {
     if (
         'serviceWorker' in navigator &&
         process.env.NODE_ENV === 'production' &&
-        !/^(127|192\.168|10)\./.test(window.location.hostname)
+        !/^(127|192\.168|10)\./u.test(window.location.hostname)
     ) {
         navigator.serviceWorker
             .register('/sw.js')
@@ -29,7 +29,9 @@ if (!process.env.BUILD_SSR) {
                     if (installingWorker) {
                         installingWorker.onstatechange = (): void => {
                             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                reg.update();
+                                reg.update().catch(() => {
+                                    /* Do nothing */
+                                });
                             }
                         };
                     }

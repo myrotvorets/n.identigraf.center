@@ -1,4 +1,6 @@
 import { Component, ComponentChild, Fragment, h } from 'preact';
+import Bugsnag from '@bugsnag/js';
+import { WAMediaBox } from 'wa-mediabox';
 import API, { MatchedFace as FoundFace, CapturedFace as RecognizedFace, decodeErrorResponse } from '../../api';
 import SmallLoader from '../SmallLoader';
 import Alert from '../Alert';
@@ -26,6 +28,12 @@ interface State {
     matchedFaces: (FoundFace[] | null)[];
 }
 
+declare global {
+    interface Window {
+        WAMediaBox: WAMediaBox;
+    }
+}
+
 export default class SearchResults extends Component<Props, State> {
     public state: Readonly<State> = {
         state: 'check',
@@ -43,7 +51,7 @@ export default class SearchResults extends Component<Props, State> {
     public componentDidUpdate(): void {
         if (this.state.state === 'done') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (self as any).WAMediaBox.bindAll(document.documentElement);
+            self.WAMediaBox.bindAll(document.documentElement);
         }
     }
 
@@ -53,11 +61,14 @@ export default class SearchResults extends Component<Props, State> {
         }
     }
 
-    private _checkStatus = (): void => {
+    private readonly _checkStatus = (): void => {
         this._timerId = null;
 
         const { guid } = this.props;
-        API.checkSearchStatus(guid).then((r): void => {
+
+        /* checkSearchStatus() cannot fail */
+        // eslint-disable-next-line no-void
+        void API.checkSearchStatus(guid).then((r): void => {
             if (r.success) {
                 if (r.status === 'inprogress') {
                     this._timerId = self.setTimeout(this._checkStatus, 2_000);
@@ -70,30 +81,29 @@ export default class SearchResults extends Component<Props, State> {
         });
     };
 
-    private _addMatches(matches: FoundFace[] | null) {
+    private _addMatches(matches: FoundFace[] | null): void {
         this.setState((prevState) => ({ matchedFaces: [...prevState.matchedFaces, matches] }));
     }
 
-    private async _getMatchedFaces(): Promise<void> {
+    private _getMatchedFaces(): void {
         const { guid } = this.props;
         const { capturedFaces } = this.state;
 
-        for (const { faceID } of capturedFaces) {
-            const response = await API.getMatchedFaces(guid, faceID);
-            const matches = response.success ? response.matches : null;
-            this._addMatches(matches);
-        }
-
-        this.setState({ state: 'done' });
+        Promise.all(capturedFaces.map(({ faceID }) => API.getMatchedFaces(guid, faceID)))
+            .then((responses) => {
+                responses.forEach((response) => this._addMatches(response.success ? response.matches : null));
+                this.setState({ state: 'done' });
+            })
+            .catch((e) => Bugsnag.notify(e));
     }
 
-    private _renderMatchedFace(face: FoundFace, index: number): ComponentChild {
+    private readonly _renderMatchedFace = (face: FoundFace, index: number): ComponentChild => {
         return (
             <li key={index}>
                 <MatchedFace {...face} />
             </li>
         );
-    }
+    };
 
     private _renderMatchedFaces(faceID: number, index: number): ComponentChild {
         const { matchedFaces } = this.state;
@@ -116,7 +126,7 @@ export default class SearchResults extends Component<Props, State> {
         );
     }
 
-    private _renderCapturedFace(face: RecognizedFace, index: number): ComponentChild {
+    private readonly _renderCapturedFace = (face: RecognizedFace, index: number): ComponentChild => {
         return (
             <div className="card" key={face.faceID}>
                 <header className="card__header">Обличчя {index + 1}</header>
@@ -127,14 +137,14 @@ export default class SearchResults extends Component<Props, State> {
                 </div>
             </div>
         );
-    }
+    };
 
     private _renderCapturedFaces(): ComponentChild {
         const { capturedFaces } = this.state;
         return capturedFaces.length ? (
             <div className="results">
                 <h3>Результати пошуку</h3>
-                {capturedFaces.map(this._renderCapturedFace, this)}
+                {capturedFaces.map(this._renderCapturedFace)}
             </div>
         ) : (
             <div className="results">

@@ -47,8 +47,6 @@ declare module 'wa-mediabox' {
             openInNew: string;
         };
 
-        // public constructor();
-
         public galleries: Record<string | number, any>;
 
         public openGallery(gallery: string | number, index: number): void;

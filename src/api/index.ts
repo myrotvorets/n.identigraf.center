@@ -7,7 +7,7 @@ import type {
     MatchedFacesResponse,
     SearchStatusResponse,
 } from './types';
-export { decodeErrorCode, decodeErrorResponse, decodeFirebaseError } from './errors';
+export { decodeErrorCode, decodeErrorResponse, decodeFirebaseError, FirebaseError } from './errors';
 export * from './types';
 
 export default class API {
@@ -46,7 +46,7 @@ export default class API {
             headers,
             body: body !== undefined ? JSON.stringify(body) : undefined,
         })
-            .then((response) => response.json())
+            .then((response) => response.json() as Promise<R>)
             .catch((e) => {
                 Bugsnag.notify(e);
                 return {
@@ -68,7 +68,7 @@ export default class API {
         }
 
         return fetch(`https://api2.myrotvorets.center${endpoint}`, { headers })
-            .then((response) => response.json())
+            .then((response) => response.json() as Promise<R>)
             .catch((e) => {
                 Bugsnag.notify(e);
                 return {

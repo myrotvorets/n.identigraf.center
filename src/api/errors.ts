@@ -1,5 +1,9 @@
 import type { ErrorResponse } from './types';
 
+export interface FirebaseError extends Error {
+    code: string;
+}
+
 const errors: Record<string, string> = {
     'auth/invalid-verification-code': 'Код підтвердження SMS недійсний.',
     'auth/too-many-requests':
