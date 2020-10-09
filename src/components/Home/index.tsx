@@ -1,6 +1,7 @@
 import { h } from 'preact';
 import { Link } from 'preact-router';
 import { connect } from 'unistore/preact';
+import Helmet from 'preact-helmet';
 import { AppState } from '../../redux/store';
 
 import './home.scss';
@@ -15,6 +16,16 @@ type Props = OwnProps & MappedProps;
 function Home({ loggedIn }: Props): h.JSX.Element {
     return (
         <section className="Home">
+            <Helmet
+                title="IDentigraF"
+                meta={[
+                    {
+                        name: 'description',
+                        content:
+                            'Система розпізнавання облич для захисту національної безпеки України, миру, безпеки людства та міжнародного правопорядку',
+                    },
+                ]}
+            />
             <div className="block">
                 <header className="block__header">IDentigraF</header>
 
