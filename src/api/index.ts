@@ -41,21 +41,11 @@ export default class API {
             headers.Authorization = `Bearer ${auth}`;
         }
 
-        return fetch(`https://api2.myrotvorets.center${endpoint}`, {
+        return API.fetch<R>(`https://api2.myrotvorets.center${endpoint}`, {
             method: 'POST',
             headers,
             body: body !== undefined ? JSON.stringify(body) : undefined,
-        })
-            .then((response) => response.json() as Promise<R>)
-            .catch((e) => {
-                Bugsnag.notify(e);
-                return {
-                    success: false,
-                    status: 502,
-                    code: 'COMM_ERROR',
-                    message: 'Помилка спілкування з сервером',
-                };
-            });
+        });
     }
 
     private static get<R>(endpoint: string, auth?: string): Promise<R | ErrorResponse> {
@@ -67,9 +57,13 @@ export default class API {
             headers.Authorization = `Bearer ${auth}`;
         }
 
-        return fetch(`https://api2.myrotvorets.center${endpoint}`, { headers })
+        return API.fetch<R>(`https://api2.myrotvorets.center${endpoint}`, { headers });
+    }
+
+    private static fetch<R>(endpoint: string, init: RequestInit): Promise<R | ErrorResponse> {
+        return fetch(endpoint, init)
             .then((response) => response.json() as Promise<R>)
-            .catch((e) => {
+            .catch((e: Error) => {
                 Bugsnag.notify(e);
                 return {
                     success: false,
