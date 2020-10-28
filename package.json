@@ -60,7 +60,6 @@
     "postcss": "^8.1.4",
     "postcss-loader": "^4.0.4",
     "preact": "^10.5.4",
-    "preact-helmet": "^4.0.0-alpha-3",
     "preact-router": "^3.2.1",
     "prettier": "^2.1.2",
     "purgecss-webpack-plugin": "^3.0.0",

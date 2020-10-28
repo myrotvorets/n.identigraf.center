@@ -2,7 +2,6 @@ import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import Bugsnag from '@bugsnag/js';
 import type firebase from 'firebase';
-import Helmet from 'preact-helmet';
 import Alert from '../Alert';
 import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
@@ -118,8 +117,6 @@ class CompareForm extends Component<Props, State> {
 
         return (
             <section className="searchform">
-                <Helmet title="Порівняння облич — IDentigraF" />
-
                 <ReadRequirements />
 
                 <form className="block" onSubmit={this._onFormSubmit} encType="multipart/form-data">
