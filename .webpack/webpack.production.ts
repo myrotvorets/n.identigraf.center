@@ -54,7 +54,9 @@ export default function (): webpack.Configuration {
                 paths: glob.sync(`${path.join(__dirname, '../src')}/**/*`, {
                     nodir: true,
                 }),
-                safelist: [/wa-mediabox/u],
+                safelist: {
+                    greedy: [/wa-mediabox/u],
+                },
             }),
             new MiniCssExtractPlugin({
                 filename: '[name].[contenthash:5].min.css',
