@@ -1,44 +1,82 @@
 import { h, render } from 'preact';
 import { Provider } from 'unistore/preact';
 import App from './components/App';
+import ErrorBoundary from './components/ErrorBoundary';
 import store from './redux/store';
 import './lib/bugsnag';
 
 export default function Application(): h.JSX.Element {
     return (
-        <Provider store={store}>
-            <App />
-        </Provider>
+        <ErrorBoundary>
+            <Provider store={store}>
+                <App />
+            </Provider>
+        </ErrorBoundary>
     );
 }
 
 if (!process.env.BUILD_SSR) {
-    render(<Application />, document.getElementById('site') as HTMLElement);
+    const body = document.body;
+    while (body.firstChild) {
+        body.removeChild(body.firstChild);
+    }
+
+    render(<Application />, body);
 
     if (
         'serviceWorker' in navigator &&
         process.env.NODE_ENV === 'production' &&
-        !/^(127|192\.168|10)\./u.test(window.location.hostname)
+        !/^((127|192\.168|10)\.|localhost)/u.test(window.location.hostname)
     ) {
         navigator.serviceWorker
             .register('/sw.js')
-            .then((reg: ServiceWorkerRegistration): void => {
-                // eslint-disable-next-line no-param-reassign
-                reg.onupdatefound = (): void => {
+            .then((reg) => {
+                reg.addEventListener('updatefound', () => {
                     const installingWorker = reg.installing;
-                    if (installingWorker) {
-                        installingWorker.onstatechange = (): void => {
-                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                reg.update().catch(() => {
-                                    /* Do nothing */
-                                });
-                            }
-                        };
-                    }
-                };
+                    installingWorker?.addEventListener('statechange', () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            reg.update().catch((e) => console.error(e));
+                        }
+                    });
+                });
             })
-            .catch((): void => {
-                /* Do nothing */
+            .catch((e) => {
+                console.error(e);
             });
     }
+
+    (document.getElementById('version') as HTMLElement).addEventListener('click', () => {
+        if (self.caches) {
+            self.caches
+                .keys()
+                .then((keyList) => Promise.all(keyList.map((key) => self.caches.delete(key))))
+                .then(() => {
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker
+                            .getRegistration()
+                            .then((reg) => {
+                                if (reg) {
+                                    reg.unregister()
+                                        .then(() => self.location.reload())
+                                        .catch((e) => console.error(e));
+                                } else {
+                                    self.location.reload();
+                                }
+                            })
+                            .catch((e) => {
+                                console.error(e);
+                                self.location.reload();
+                            });
+                    } else {
+                        self.location.reload();
+                    }
+                })
+                .catch((e) => {
+                    console.error(e);
+                    self.location.reload();
+                });
+        } else {
+            self.location.reload();
+        }
+    });
 }

@@ -1,15 +1,16 @@
 @import '../../scss/vars';
 
 .app-header {
-    $header-height: 15rem;
-    $header-font-size: 2.6rem;
-    text-align: center;
+    $header-height: 10rem;
 
-    background: url(../../assets/identigraf-logo.svg) no-repeat 50% / contain,
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: url(../../assets/identigraf-logo.svg#u) no-repeat 50% / contain,
         radial-gradient(closest-side at center, #ffffff 0%, #91a3bb 25%, #224678 50%, #122239 75%, #000100 100%);
     height: $header-height;
     flex: 0 0 $header-height;
-    padding: 0;
 
     h1 {
         font-weight: bold;
@@ -17,7 +18,6 @@
         text-shadow: 0 1px 1px #000;
         margin: 0;
         padding: 0;
-        visibility: hidden;
     }
 
     a {
@@ -27,18 +27,18 @@
 
     @media (max-width: 767px) {
         h1 {
-            z-index: 1000;
+            z-index: 1500;
             position: absolute;
             left: $block-inner-padding;
-            font-size: $header-font-size;
+            font-size: $font-size-base;
             line-height: 1;
-            top: (4rem - $header-font-size) / 2;
-            visibility: visible;
+            top: (3rem - $font-size-base) / 2;
         }
 
         & {
             padding: 0;
             height: 0;
+            flex-basis: 0;
         }
     }
 }

@@ -5,12 +5,11 @@ $font-family-sans-serif:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 $font-family-emoji:       "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Segoe UI Symbol", "Android Emoji", EmojiSymbols, "EmojiOne Mozilla" !default;
 $font-family-monospace:   SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
 
-$font-size-base:          1.6rem !default;
-$font-size-l-factor:      1.25 !default;
-$font-size-s-factor:      .875 !default;
+$font-size-base:          1.375rem !default;
+$font-size-l:             1.125rem !default;
 
 $font-weight-base:        400 !default;
-$line-height-base:        1.75 !default;
+$line-height-base:        1.5 !default;
 
 $h1-font-size-factor:     2.50 !default;
 $h2-font-size-factor:     2.00 !default;
@@ -21,7 +20,7 @@ $h6-font-size-factor:     1.00 !default;
 
 $headings-margin-bottom:  $spacer / 2 !default;
 $headings-font-family:    null !default;
-$headings-font-weight:    500 !default;
+$headings-font-weight:    700 !default;
 $headings-line-height:    1.2 !default;
 $headings-color:          null !default;
 
@@ -118,6 +117,6 @@ $viewport-upto-s:  $viewport-s  - 1;
 $viewport-upto-m:  $viewport-m  - 1;
 $viewport-upto-l:  $viewport-l  - 1;
 
-$block-margin: 2rem !default;
-$block-padding: 2rem !default;
-$block-inner-padding: 1rem !default;
+$block-margin: 1.5rem !default;
+$block-padding: 1.5rem !default;
+$block-inner-padding: .9rem !default;

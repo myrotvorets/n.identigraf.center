@@ -4,7 +4,17 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { InjectManifest } from 'workbox-webpack-plugin';
 import { HwpAttributesPlugin } from 'hwp-attributes-plugin';
+import { execSync } from 'child_process';
 import ServiceWorkerPlugin from './ServiceWorkerPlugin';
+
+let version: string;
+try {
+    version = execSync('git describe --always --long', { cwd: path.resolve(path.join(__dirname, '..')) })
+        .toString()
+        .trim();
+} catch (e) {
+    version = 'development';
+}
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -89,6 +99,7 @@ const config: webpack.Configuration = {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
             'process.env.BUILD_SSR': JSON.stringify(false),
+            'process.env.APP_VERSION': JSON.stringify(version),
         }),
         new webpack.ProvidePlugin({
             h: ['preact', 'h'],
@@ -97,6 +108,9 @@ const config: webpack.Configuration = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: '!!ejs-webpack-loader!./src/index.html',
+            templateParameters: {
+                version,
+            },
             xhtml: true,
             minify: {
                 collapseWhitespace: true,

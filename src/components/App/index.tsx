@@ -24,8 +24,7 @@ function lazy<T>(loader: () => Promise<{ default: T }> | { default: T }): T {
     return loafing(loader as () => Promise<{ default: T }>);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function suspenseWrapper<T extends any>(Component: ComponentType<T>): (props: RenderableProps<T>) => h.JSX.Element {
+function suspenseWrapper<T>(Component: ComponentType<T>): (props: RenderableProps<T>) => h.JSX.Element {
     if (process.env.BUILD_SSR) {
         // eslint-disable-next-line react/display-name
         return (props: RenderableProps<T>): h.JSX.Element => (
