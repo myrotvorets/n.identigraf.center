@@ -26,6 +26,12 @@ body {
     flex-direction: column;
 }
 
+@media (max-width: $viewport-upto-s) {
+    body {
+        font-size: $font-size-l;
+    }
+}
+
 main {
     overflow: hidden;
     flex: 1 0 auto;
