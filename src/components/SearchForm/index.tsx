@@ -118,7 +118,7 @@ class SearchForm extends Component<Props, State> {
                 <ReadRequirements />
 
                 <form className="block" onSubmit={this._onFormSubmit}>
-                    <header className="block__header">Завантажити світлину для пошуку</header>
+                    <header className="block__header">Пошук</header>
 
                     {error && <Alert message={error} />}
 

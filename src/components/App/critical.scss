@@ -38,23 +38,10 @@ main {
     max-width: 95%;
     width: 85ch;
     padding: 2rem;
-    margin: 0 auto;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-
-    &:first-child {
-        justify-self: center;
-        margin: auto;
-    }
+    margin: auto;
 }
 
 @media (min-width: 576px) {
-    > main {
-        max-width: 95%;
-    }
-
     .d-sm-none {
         display: none;
     }

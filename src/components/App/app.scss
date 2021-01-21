@@ -39,8 +39,8 @@ optgroup,
 select,
 textarea {
     font-family: inherit;
-    font-size: 100%;
-    line-height: 1.15;
+    font-size: inherit;
+    line-height: inherit;
     margin: 0;
 }
 
@@ -169,7 +169,7 @@ textarea {
     @include fb-color("surface");
     @include rounded-border;
     outline: none;
-    padding: 0.7rem 1rem;
+    padding: .5em;
     outline-offset: 0;
 
     &:focus {
@@ -181,6 +181,11 @@ textarea {
     }
 }
 
+input[type="file"] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 label input {
     vertical-align: middle;
 }
@@ -188,11 +193,11 @@ label input {
 .block {
     @extend %block;
     box-shadow: 1rem 1rem 0.5rem #666;
+    margin-right: 1.1rem;
 }
 
 main > section {
     display: flex;
-    flex: 1;
     flex-direction: column;
     justify-content: center;
     height: 100%;

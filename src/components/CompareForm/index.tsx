@@ -120,7 +120,7 @@ class CompareForm extends Component<Props, State> {
                 <ReadRequirements />
 
                 <form className="block" onSubmit={this._onFormSubmit} encType="multipart/form-data">
-                    <header className="block__header">Завантажити світлину для порівняння</header>
+                    <header className="block__header">Порівняння</header>
 
                     {error && <Alert message={error} />}
 
