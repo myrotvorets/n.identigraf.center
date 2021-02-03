@@ -73,7 +73,7 @@
     "unistore": "^3.5.2",
     "wa-mediabox": "^1.0.1",
     "webpack": "^4.46.0",
-    "webpack-cli": "^3.3.12",
+    "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.0",
     "webpack-subresource-integrity": "^1.5.2",
