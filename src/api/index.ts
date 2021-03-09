@@ -7,7 +7,7 @@ import type {
     MatchedFacesResponse,
     SearchStatusResponse,
 } from './types';
-export { decodeErrorCode, decodeErrorResponse, decodeFirebaseError, FirebaseError } from './errors';
+export * from './errors';
 export * from './types';
 
 export default class API {

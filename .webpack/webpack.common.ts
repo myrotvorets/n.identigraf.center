@@ -5,7 +5,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { InjectManifest } from 'workbox-webpack-plugin';
 import { HwpAttributesPlugin } from 'hwp-attributes-plugin';
 import { execSync } from 'child_process';
-import ServiceWorkerPlugin from './ServiceWorkerPlugin';
+import { extendDefaultPlugins } from 'svgo';
 
 let version: string;
 try {
@@ -27,13 +27,15 @@ const config: webpack.Configuration = {
         path: path.resolve(__dirname, '../dist'),
         filename: '[name].[contenthash:5].min.mjs',
         chunkFilename: '[name].[chunkhash:5].min.mjs',
+        assetModuleFilename: '[name].[contenthash:5][ext]',
         publicPath: '/',
         pathinfo: !isProd,
         globalObject: 'self',
-        jsonpScriptType: 'module',
+        scriptType: 'module',
+        crossOriginLoading: 'anonymous',
     },
     node: false,
-    devtool: isProd ? 'source-map' : 'cheap-eval-source-map',
+    devtool: isProd ? 'source-map' : 'eval-cheap-source-map',
     mode: (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'none',
     resolve: {
         extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
@@ -65,7 +67,9 @@ const config: webpack.Configuration = {
                 },
             },
             {
-                test: /\.(svg|png)$/u,
+                test: /\.png$/u,
+                issuer: /\.json$/u,
+                type: 'javascript/auto',
                 loader: 'file-loader',
                 options: {
                     name: '[name].[contenthash:5].[ext]',
@@ -73,24 +77,37 @@ const config: webpack.Configuration = {
                 },
             },
             {
-                test: /\.json$/u,
-                issuer: /\.html$/u,
-                type: 'javascript/auto',
+                test: /\.(png|jpe?g|webp)$/u,
+                type: 'asset/resource',
+            },
+            {
+                test: /\.svg$/u,
+                type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 1024,
+                    },
+                },
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: 'svgo-loader',
                         options: {
-                            name: '[name].[contenthash:5].[ext]',
-                            esModule: false,
+                            multipass: true,
+                            plugins: extendDefaultPlugins([
+                                {
+                                    name: 'removeEmptyContainers',
+                                    active: false,
+                                },
+                            ]),
                         },
                     },
-                    {
-                        loader: 'extract-loader',
-                    },
-                    {
-                        loader: 'ref-loader',
-                    },
                 ],
+            },
+            {
+                test: /\.json$/u,
+                issuer: /\.html$/u,
+                type: 'asset/resource',
+                use: ['extract-loader', 'ref-loader'],
             },
         ],
     },
@@ -129,11 +146,8 @@ const config: webpack.Configuration = {
         new InjectManifest({
             swSrc: './src/sw.ts',
             include: ['index.html', /\.js$/u, /\.svg$/u, /\.css$/u],
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(js|css)/u,
         }),
-        new ServiceWorkerPlugin(),
         new HwpAttributesPlugin({
             module: ['/**.mjs'],
         }),
