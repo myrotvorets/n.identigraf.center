@@ -3,7 +3,7 @@ import { merge } from 'webpack-merge';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import PurgecssPlugin from 'purgecss-webpack-plugin';
-// import SriPlugin from 'webpack-subresource-integrity';
+import { SubresourceIntegrityPlugin } from 'webpack-subresource-integrity';
 import { HwpInlineRuntimeChunkPlugin } from 'hwp-inline-runtime-chunk-plugin';
 import glob from 'glob';
 import path from 'path';
@@ -62,9 +62,9 @@ export default function (): webpack.Configuration {
                 chunkFilename: '[name].[contenthash:5].min.css',
             }),
             new HwpInlineRuntimeChunkPlugin({ removeSourceMap: true }),
-            // new SriPlugin({
-            //     hashFuncNames: ['sha384'],
-            // }),
+            new SubresourceIntegrityPlugin({
+                hashFuncNames: ['sha384'],
+            }),
         ],
         optimization: {
             runtimeChunk: 'single',
