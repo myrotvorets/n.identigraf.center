@@ -45,38 +45,41 @@ if (!process.env.BUILD_SSR) {
             });
     }
 
-    (document.getElementById('version') as HTMLElement).addEventListener('click', () => {
-        if (self.caches) {
-            self.caches
-                .keys()
-                .then((keyList) => Promise.all(keyList.map((key) => self.caches.delete(key))))
-                .then(() => {
-                    if ('serviceWorker' in navigator) {
-                        navigator.serviceWorker
-                            .getRegistration()
-                            .then((reg) => {
-                                if (reg) {
-                                    reg.unregister()
-                                        .then(() => self.location.reload())
-                                        .catch((e) => console.error(e));
-                                } else {
+    const ver = document.getElementById('version');
+    if (ver) {
+        ver.addEventListener('click', () => {
+            if (self.caches) {
+                self.caches
+                    .keys()
+                    .then((keyList) => Promise.all(keyList.map((key) => self.caches.delete(key))))
+                    .then(() => {
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker
+                                .getRegistration()
+                                .then((reg) => {
+                                    if (reg) {
+                                        reg.unregister()
+                                            .then(() => self.location.reload())
+                                            .catch((e) => console.error(e));
+                                    } else {
+                                        self.location.reload();
+                                    }
+                                })
+                                .catch((e) => {
+                                    console.error(e);
                                     self.location.reload();
-                                }
-                            })
-                            .catch((e) => {
-                                console.error(e);
-                                self.location.reload();
-                            });
-                    } else {
+                                });
+                        } else {
+                            self.location.reload();
+                        }
+                    })
+                    .catch((e) => {
+                        console.error(e);
                         self.location.reload();
-                    }
-                })
-                .catch((e) => {
-                    console.error(e);
-                    self.location.reload();
-                });
-        } else {
-            self.location.reload();
-        }
-    });
+                    });
+            } else {
+                self.location.reload();
+            }
+        });
+    }
 }
