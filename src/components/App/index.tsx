@@ -24,12 +24,12 @@ function lazy<T>(loader: () => Promise<{ default: T }> | { default: T }): T {
     return loafing(loader as () => Promise<{ default: T }>);
 }
 
-function suspenseWrapper<T>(Component: ComponentType<T>): (props: RenderableProps<T>) => h.JSX.Element {
+function suspenseWrapper<T>(C: ComponentType<T>): (props: RenderableProps<T>) => h.JSX.Element {
     if (process.env.BUILD_SSR) {
         // eslint-disable-next-line react/display-name
         return (props: RenderableProps<T>): h.JSX.Element => (
             <main>
-                <Component {...props} />
+                <C {...props} />
             </main>
         );
     }
@@ -150,7 +150,7 @@ class App extends Component<Props, State> {
                     </main>
                 ) : (
                     <Fragment>
-                        {isFrame ? null : <NavBar />}
+                        {isFrame && <NavBar />}
 
                         <Router>
                             <Route path="/" component={suspenseWrapper(HomeRoute)} />
@@ -167,7 +167,7 @@ class App extends Component<Props, State> {
                         </Router>
                     </Fragment>
                 )}
-                {isFrame ? null : <Footer />}
+                {isFrame && <Footer />}
             </Fragment>
         );
     }

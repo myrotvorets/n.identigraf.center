@@ -93,7 +93,7 @@ class Login extends Component<Props, State> {
                 verifier
                     .render()
                     .then((widgetId) => grecaptcha?.reset(widgetId))
-                    .catch((e) => Bugsnag.notify(e));
+                    .catch((err) => Bugsnag.notify(err));
             }
         } else {
             this.setState({

@@ -68,7 +68,7 @@ class SearchForm extends Component<Props, State> {
                 req.setRequestHeader('Authorization', `Bearer ${token}`);
                 req.send(data);
             })
-            .catch((e: FirebaseError) => this._setError(decodeFirebaseError(e.code, e.message)));
+            .catch((err: FirebaseError) => this._setError(decodeFirebaseError(err.code, err.message)));
     };
 
     private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
@@ -100,8 +100,8 @@ class SearchForm extends Component<Props, State> {
             } else {
                 this._setError(decodeErrorResponse(body));
             }
-        } catch (e) {
-            Bugsnag.notify(e);
+        } catch (err) {
+            Bugsnag.notify(err);
             this._setError('Несподівана помилка під час аналізу відповіді сервера');
         }
     };
