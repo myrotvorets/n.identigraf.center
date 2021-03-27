@@ -143,14 +143,14 @@ class App extends Component<Props, State> {
 
         return (
             <Fragment>
-                {isFrame ? null : <Header />}
+                {!isFrame && <Header />}
                 {isRussia ? (
                     <main>
                         <RussiaIsNotWelcomeHere />
                     </main>
                 ) : (
                     <Fragment>
-                        {isFrame && <NavBar />}
+                        {!isFrame && <NavBar />}
 
                         <Router>
                             <Route path="/" component={suspenseWrapper(HomeRoute)} />
@@ -167,7 +167,7 @@ class App extends Component<Props, State> {
                         </Router>
                     </Fragment>
                 )}
-                {isFrame && <Footer />}
+                {!isFrame && <Footer />}
             </Fragment>
         );
     }
