@@ -9,6 +9,10 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 skipWaiting();
 clientsClaim();
 
+declare let self: ServiceWorkerGlobalScope;
+const manifest = self.__WB_MANIFEST;
+precacheAndRoute(manifest, {});
+
 registerRoute(
     ({ request }) => request.mode === 'navigate',
     new NetworkFirst({
@@ -21,10 +25,6 @@ registerRoute(
         ],
     }),
 );
-
-declare let self: WorkerGlobalScope;
-const manifest = self.__WB_MANIFEST;
-precacheAndRoute(manifest, {});
 
 setCatchHandler(({ request }) => {
     if (typeof request !== 'string' && request.mode === 'navigate') {

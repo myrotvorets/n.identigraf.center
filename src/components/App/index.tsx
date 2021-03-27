@@ -38,7 +38,7 @@ function suspenseWrapper<T>(C: ComponentType<T>): (props: RenderableProps<T>) =>
     return (props: RenderableProps<T>): h.JSX.Element => (
         <main>
             <Suspense fallback={<Loader />}>
-                <Component {...props} />
+                <C {...props} />
             </Suspense>
         </main>
     );
