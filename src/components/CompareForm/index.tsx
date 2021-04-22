@@ -59,7 +59,7 @@ class CompareForm extends Component<Props, State> {
                 req.addEventListener('load', this._onUploadSucceeded);
                 req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/compare');
                 req.setRequestHeader('Authorization', `Bearer ${token}`);
-                req.send(data);
+                return req.send(data);
             })
             .catch((err: FirebaseError) => this._setError(decodeFirebaseError(err.code, err.message)));
     };

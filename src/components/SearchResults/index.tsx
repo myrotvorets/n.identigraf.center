@@ -68,7 +68,7 @@ export default class SearchResults extends Component<Props, State> {
 
         /* checkSearchStatus() cannot fail */
         // eslint-disable-next-line no-void
-        void API.checkSearchStatus(guid).then((r): void => {
+        void API.checkSearchStatus(guid).then((r) => {
             if (r.success) {
                 if (r.status === 'inprogress') {
                     this._timerId = self.setTimeout(this._checkStatus, 2_000);
@@ -78,6 +78,8 @@ export default class SearchResults extends Component<Props, State> {
             } else {
                 this.setState({ state: 'done', error: decodeErrorResponse(r) });
             }
+
+            return null;
         });
     };
 
@@ -92,7 +94,7 @@ export default class SearchResults extends Component<Props, State> {
         Promise.all(capturedFaces.map(({ faceID }) => API.getMatchedFaces(guid, faceID)))
             .then((responses) => {
                 responses.forEach((response) => this._addMatches(response.success ? response.matches : null));
-                this.setState({ state: 'done' });
+                return this.setState({ state: 'done' });
             })
             .catch((e) => Bugsnag.notify(e));
     }

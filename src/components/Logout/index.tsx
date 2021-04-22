@@ -25,7 +25,7 @@ function LogoutRoute(props: Props): h.JSX.Element {
         .signOut()
         .then(() => {
             setUser(null);
-            route('/');
+            return route('/');
         })
         .catch((e) => {
             Bugsnag.notify(e);

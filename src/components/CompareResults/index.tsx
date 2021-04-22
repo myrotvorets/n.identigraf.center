@@ -45,7 +45,7 @@ export default class CompareResults extends Component<Props, State> {
 
         /* checkCompareStatus() cannot fail */
         // eslint-disable-next-line no-void
-        void API.checkCompareStatus(guid).then((r): void => {
+        void API.checkCompareStatus(guid).then((r) => {
             if (r.success) {
                 if (r.status === 'inprogress') {
                     this._timerId = self.setTimeout(this._checkStatus, 1_000);
@@ -59,6 +59,8 @@ export default class CompareResults extends Component<Props, State> {
             } else {
                 this.setState({ state: 'done', error: decodeErrorResponse(r) });
             }
+
+            return null;
         });
     };
 
