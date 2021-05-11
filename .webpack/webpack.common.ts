@@ -124,7 +124,7 @@ const config: webpack.Configuration = {
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: '!!ejs-webpack-loader!./src/index.html',
+            template: '!!ejs-compiled-loader!./src/index.html',
             templateParameters: {
                 version,
             },
