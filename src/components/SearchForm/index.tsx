@@ -1,7 +1,7 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
-import type firebase from 'firebase';
 import Bugsnag from '@bugsnag/js';
+import type firebase from 'firebase';
 import Alert from '../Alert';
 import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
