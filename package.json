@@ -57,7 +57,7 @@
     "postcss-loader": "^5.1.0",
     "preact": "^10.5.11",
     "preact-router": "^3.2.1",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.1",
     "purgecss-webpack-plugin": "^4.0.2",
     "ref-loader": "^1.0.3",
     "sass": "^1.32.5",
