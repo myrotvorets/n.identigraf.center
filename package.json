@@ -75,7 +75,7 @@
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.0",
-    "webpack-subresource-integrity": "^5.0.0-alpha.5",
+    "webpack-subresource-integrity": "^5.0.0-rc.1",
     "workbox-cacheable-response": "^6.0.2",
     "workbox-core": "^6.0.2",
     "workbox-precaching": "^6.0.2",
