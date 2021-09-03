@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { ActionBinder, connect } from 'unistore/preact';
 import { ActionMap } from 'unistore';
 import { route } from 'preact-router';
-import firebase from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import Bugsnag from '@bugsnag/js';
 import { setUser } from '../../redux/actions';
 import { AppState } from '../../redux/store';
@@ -18,10 +18,9 @@ interface ActionProps extends ActionMap<AppState> {
 type Props = OwnProps & MappedProps & ActionBinder<AppState, ActionProps>;
 
 function LogoutRoute(props: Props): h.JSX.Element {
-    const { setUser } = props;
+    const { setUser } = props; // NOSONAR
 
-    firebase
-        .auth()
+    getAuth()
         .signOut()
         .then(() => {
             setUser(null);
