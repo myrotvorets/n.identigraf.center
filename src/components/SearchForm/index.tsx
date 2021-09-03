@@ -1,7 +1,7 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import Bugsnag from '@bugsnag/js';
-import type firebase from 'firebase';
+import type { User } from 'firebase/auth';
 import Alert from '../Alert';
 import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
@@ -18,7 +18,7 @@ import {
 import './searchform.scss';
 
 interface Props {
-    user: firebase.User | null | undefined;
+    user: User | null | undefined;
 }
 
 interface State {
@@ -52,7 +52,7 @@ class SearchForm extends Component<Props, State> {
 
     private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        const user = this.props.user as firebase.User;
+        const user = this.props.user as User;
         const data = new FormData(e.currentTarget);
 
         this.setState({ uploadProgress: 0, error: null });
@@ -101,7 +101,7 @@ class SearchForm extends Component<Props, State> {
                 this._setError(decodeErrorResponse(body));
             }
         } catch (err) {
-            Bugsnag.notify(err);
+            Bugsnag.notify(err as Error);
             this._setError('Несподівана помилка під час аналізу відповіді сервера');
         }
     };

@@ -3,8 +3,8 @@ import { Suspense, lazy as loafing } from 'preact/compat';
 import { Route, Router } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
 import { ActionMap } from 'unistore';
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { Unsubscribe, User, getAuth } from 'firebase/auth';
 import firebaseConfig from '../../config/firebase';
 import { AppState } from '../../redux/store';
 import { setUser } from '../../redux/actions';
@@ -93,7 +93,7 @@ const RequirementsRoute = lazy(() => import(/* webpackChunkName: "reqs" */ '../.
 
 type OwnProps = unknown;
 interface MappedProps {
-    user: firebase.User | null | undefined;
+    user: User | null | undefined;
 }
 
 interface ActionProps extends ActionMap<AppState> {
@@ -108,7 +108,7 @@ interface State {
 }
 
 class App extends Component<Props, State> {
-    private _unsub: firebase.Unsubscribe | undefined;
+    private _unsub: Unsubscribe | undefined;
 
     public constructor(props: Props) {
         super(props);
@@ -124,12 +124,12 @@ class App extends Component<Props, State> {
             isFrame,
         };
 
-        firebase.initializeApp(firebaseConfig);
-        firebase.auth().useDeviceLanguage();
+        initializeApp(firebaseConfig);
+        getAuth().useDeviceLanguage();
     }
 
     public componentDidMount(): void {
-        this._unsub = firebase.auth().onAuthStateChanged((user: firebase.User | null): void => {
+        this._unsub = getAuth().onAuthStateChanged((user: User | null): void => {
             this.props.setUser(user);
         });
     }

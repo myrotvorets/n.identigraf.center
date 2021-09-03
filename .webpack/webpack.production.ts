@@ -7,6 +7,7 @@ import { SubresourceIntegrityPlugin } from 'webpack-subresource-integrity';
 import { HwpInlineRuntimeChunkPlugin } from 'hwp-inline-runtime-chunk-plugin';
 import glob from 'glob';
 import path from 'path';
+import { TerserOptions } from 'terser-webpack-plugin/types';
 import commonConfig from './webpack.common';
 
 export default function (): webpack.Configuration {
@@ -70,7 +71,7 @@ export default function (): webpack.Configuration {
             runtimeChunk: 'single',
             moduleIds: 'deterministic',
             minimizer: [
-                new TerserPlugin({
+                new TerserPlugin<TerserOptions>({
                     terserOptions: {
                         output: {
                             comments: false,

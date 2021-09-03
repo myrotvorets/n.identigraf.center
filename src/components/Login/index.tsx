@@ -1,7 +1,7 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
-import firebase from 'firebase/app';
+import { ConfirmationResult, RecaptchaVerifier, User, getAuth, signInWithPhoneNumber } from 'firebase/auth';
 import { ActionMap } from 'unistore';
 import Bugsnag from '@bugsnag/js';
 import Loader from '../Loader';
@@ -15,7 +15,7 @@ import './login.scss';
 
 type OwnProps = unknown;
 interface MappedProps {
-    user: firebase.User | null | undefined;
+    user: User | null | undefined;
 }
 
 interface ActionProps extends ActionMap<AppState> {
@@ -29,7 +29,7 @@ interface State {
     phone: string;
     code: string;
     state: 'idle' | 'busy';
-    confirmation: firebase.auth.ConfirmationResult | null;
+    confirmation: ConfirmationResult | null;
     error: string | null;
 }
 
@@ -72,17 +72,14 @@ class Login extends Component<Props, State> {
         }
     };
 
-    private readonly _onPhoneFormSubmit = async (
-        phone: string,
-        verifier: firebase.auth.RecaptchaVerifier,
-    ): Promise<void> => {
+    private readonly _onPhoneFormSubmit = async (phone: string, verifier: RecaptchaVerifier): Promise<void> => {
         const ph = `+380${phone.replace(/[^0-9]/gu, '')}`;
 
         this.setState({ state: 'busy', phone });
         const response = await API.checkPhone(ph);
         if (response.success) {
             try {
-                const result = await firebase.auth().signInWithPhoneNumber(ph, verifier);
+                const result = await signInWithPhoneNumber(getAuth(), ph, verifier);
                 this.setState({ confirmation: result, error: null, state: 'idle' });
             } catch (e) {
                 this.setState({

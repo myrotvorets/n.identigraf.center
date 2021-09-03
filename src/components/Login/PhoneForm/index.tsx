@@ -1,11 +1,11 @@
 import { Component, ComponentChild, RefObject, createRef, h } from 'preact';
-import firebase from 'firebase/app';
+import { RecaptchaVerifier, getAuth } from 'firebase/auth';
 import Alert from '../../Alert';
 
 interface Props {
     error: string | null;
     state: 'idle' | 'busy';
-    onPhoneSubmit: (phone: string, verifier: firebase.auth.RecaptchaVerifier) => unknown;
+    onPhoneSubmit: (phone: string, verifier: RecaptchaVerifier) => unknown;
 }
 
 interface State {
@@ -25,13 +25,21 @@ export default class PhoneForm extends Component<Props, State> {
 
     private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
     private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
-    private _verifier?: firebase.auth.RecaptchaVerifier;
+    private _verifier?: RecaptchaVerifier;
 
     public componentDidMount(): void {
         this._inputRef.current?.focus();
-        this._verifier = new firebase.auth.RecaptchaVerifier(this._buttonRef.current, {
-            size: 'invisible',
-        });
+        if (this._buttonRef.current) {
+            this._verifier = new RecaptchaVerifier(
+                this._buttonRef.current,
+                {
+                    size: 'invisible',
+                },
+                getAuth(),
+            );
+        } else {
+            throw new Error('_buttonRef.current is null');
+        }
     }
 
     public componentDidUpdate(): void {
@@ -52,7 +60,7 @@ export default class PhoneForm extends Component<Props, State> {
         e.preventDefault();
         const { agreed, phone } = this.state;
         if (agreed && PhoneForm.isPhoneValid(phone)) {
-            this.props.onPhoneSubmit(phone, this._verifier as firebase.auth.RecaptchaVerifier);
+            this.props.onPhoneSubmit(phone, this._verifier as RecaptchaVerifier);
         }
     };
 

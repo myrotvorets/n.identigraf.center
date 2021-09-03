@@ -5,7 +5,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { InjectManifest } from 'workbox-webpack-plugin';
 import { HwpAttributesPlugin } from 'hwp-attributes-plugin';
 import { execSync } from 'child_process';
-import { extendDefaultPlugins } from 'svgo';
+import { OptimizeOptions } from 'svgo';
 
 let version: string;
 try {
@@ -49,12 +49,9 @@ const config: webpack.Configuration = {
         headers: {
             'Access-Control-Allow-Origin': '*',
         },
-        contentBase: path.resolve(__dirname, '../dist'),
         compress: true,
         port: 8081,
         historyApiFallback: true,
-        writeToDisk: true,
-        disableHostCheck: true,
     },
     module: {
         rules: [
@@ -93,13 +90,17 @@ const config: webpack.Configuration = {
                         loader: 'svgo-loader',
                         options: {
                             multipass: true,
-                            plugins: extendDefaultPlugins([
+                            plugins: [
                                 {
-                                    name: 'removeEmptyContainers',
-                                    active: false,
+                                    name: 'preset-default',
+                                    params: {
+                                        overrides: {
+                                            removeEmptyContainers: false,
+                                        },
+                                    },
                                 },
-                            ]),
-                        },
+                            ],
+                        } as OptimizeOptions,
                     },
                 ],
             },
