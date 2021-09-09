@@ -70,7 +70,7 @@
     "wa-mediabox": "^1.0.1",
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^4.1.0",
+    "webpack-dev-server": "^4.2.0",
     "webpack-merge": "^5.7.0",
     "webpack-subresource-integrity": "^5.0.0-alpha.5",
     "workbox-cacheable-response": "^6.0.2",
