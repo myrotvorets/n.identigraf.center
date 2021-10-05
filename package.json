@@ -27,7 +27,7 @@
     "@myrotvorets/eslint-config-myrotvorets-preact-ts": "^2.2.2",
     "@types/grecaptcha": "^3.0.1",
     "@types/mini-css-extract-plugin": "^2.0.0",
-    "@types/node": "^16.4.0",
+    "@types/node": "^16.10.3",
     "@types/svgo": "^2.0.0",
     "@types/webpack-dev-server": "^4.1.0",
     "@types/workbox-webpack-plugin": "^5.1.5",
