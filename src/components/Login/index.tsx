@@ -73,7 +73,7 @@ class Login extends Component<Props, State> {
     };
 
     private readonly _onPhoneFormSubmit = async (phone: string, verifier: RecaptchaVerifier): Promise<void> => {
-        const ph = `+380${phone.replace(/[^0-9]/gu, '')}`;
+        const ph = `+380${phone.replace(/\D/gu, '')}`;
 
         this.setState({ state: 'busy', phone });
         const response = await API.checkPhone(ph);
@@ -90,7 +90,7 @@ class Login extends Component<Props, State> {
                 verifier
                     .render()
                     .then((widgetId) => grecaptcha?.reset(widgetId))
-                    .catch((err) => Bugsnag.notify(err));
+                    .catch((err: Error) => Bugsnag.notify(err));
             }
         } else {
             this.setState({

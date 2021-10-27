@@ -14,14 +14,12 @@ interface State {
 
 export default class CodeForm extends Component<Props> {
     private static isCodeValid(code: string): boolean {
-        return /^[0-9]{6}$/u.test(code);
+        return /^\d{6}$/u.test(code);
     }
 
     public state: Readonly<State> = {
         code: '',
     };
-
-    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
 
     public componentDidMount(): void {
         this._inputRef.current?.focus();
@@ -46,6 +44,8 @@ export default class CodeForm extends Component<Props> {
         this.setState({ code: value });
     };
 
+    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
+
     public render(): ComponentChild {
         const { error, phone, state } = this.props;
         const { code } = this.state;
@@ -59,7 +59,7 @@ export default class CodeForm extends Component<Props> {
                     Будь ласка, введіть 6-значний код, який ми надіслали на номер{' '}
                     {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a href="#" onClick={this._onResetClicked} role="button">
-                        +380{phone.replace(/[^0-9]/gu, '')}
+                        +380{phone.replace(/\D/gu, '')}
                     </a>
                 </p>
 

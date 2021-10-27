@@ -15,17 +15,13 @@ interface State {
 
 export default class PhoneForm extends Component<Props, State> {
     private static isPhoneValid(phone: string): boolean {
-        return /^[0-9]{9}$/u.exec(phone.replace(/[^0-9]/gu, '')) !== null;
+        return /^\d{9}$/u.exec(phone.replace(/\D/gu, '')) !== null;
     }
 
     public state: Readonly<State> = {
         agreed: false,
         phone: '',
     };
-
-    private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
-    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
-    private _verifier?: RecaptchaVerifier;
 
     public componentDidMount(): void {
         this._inputRef.current?.focus();
@@ -63,6 +59,10 @@ export default class PhoneForm extends Component<Props, State> {
             this.props.onPhoneSubmit(phone, this._verifier as RecaptchaVerifier);
         }
     };
+
+    private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
+    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
+    private _verifier?: RecaptchaVerifier;
 
     public render(): ComponentChild {
         const { error, state } = this.props;

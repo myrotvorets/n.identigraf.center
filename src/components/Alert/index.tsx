@@ -8,13 +8,13 @@ interface Props {
 }
 
 export default class Alert extends Component<Props> {
-    private readonly _ref: RefObject<HTMLDivElement> = createRef();
-
     public componentDidMount(): void {
         if (this.props.message) {
             this._ref.current?.scrollIntoView(true);
         }
     }
+
+    private readonly _ref: RefObject<HTMLDivElement> = createRef();
 
     public render(): ComponentChild {
         return (
