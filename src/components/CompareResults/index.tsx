@@ -26,6 +26,8 @@ export default class CompareResults extends Component<Props, State> {
         numFiles: 0,
     };
 
+    private _timerId: number | null = null;
+
     public componentDidMount(): void {
         this._timerId = self.setTimeout(this._checkStatus, 0);
     }
@@ -35,8 +37,6 @@ export default class CompareResults extends Component<Props, State> {
             self.clearTimeout(this._timerId);
         }
     }
-
-    private _timerId: number | null = null;
 
     private readonly _checkStatus = (): void => {
         this._timerId = null;

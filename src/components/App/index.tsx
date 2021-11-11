@@ -108,6 +108,8 @@ interface State {
 }
 
 class App extends Component<Props, State> {
+    private _unsub: Unsubscribe | undefined;
+
     public constructor(props: Props) {
         super(props);
         let isFrame = false;
@@ -135,8 +137,6 @@ class App extends Component<Props, State> {
     public componentWillUnmount(): void {
         this._unsub?.();
     }
-
-    private _unsub: Unsubscribe | undefined;
 
     public render(): ComponentChild {
         const { isFrame, isRussia } = this.state;

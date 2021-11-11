@@ -23,6 +23,10 @@ export default class PhoneForm extends Component<Props, State> {
         phone: '',
     };
 
+    private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
+    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
+    private _verifier?: RecaptchaVerifier;
+
     public componentDidMount(): void {
         this._inputRef.current?.focus();
         if (this._buttonRef.current) {
@@ -59,10 +63,6 @@ export default class PhoneForm extends Component<Props, State> {
             this.props.onPhoneSubmit(phone, this._verifier as RecaptchaVerifier);
         }
     };
-
-    private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
-    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
-    private _verifier?: RecaptchaVerifier;
 
     public render(): ComponentChild {
         const { error, state } = this.props;

@@ -21,6 +21,8 @@ export default class CodeForm extends Component<Props> {
         code: '',
     };
 
+    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
+
     public componentDidMount(): void {
         this._inputRef.current?.focus();
     }
@@ -43,8 +45,6 @@ export default class CodeForm extends Component<Props> {
         const { value } = currentTarget;
         this.setState({ code: value });
     };
-
-    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
 
     public render(): ComponentChild {
         const { error, phone, state } = this.props;
