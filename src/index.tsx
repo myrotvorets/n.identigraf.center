@@ -53,30 +53,9 @@ if (!process.env.BUILD_SSR) {
                 self.caches
                     .keys()
                     .then((keyList) => Promise.all(keyList.map((key) => self.caches.delete(key))))
-                    .then(() => {
-                        if ('serviceWorker' in navigator) {
-                            // eslint-disable-next-line promise/no-nesting
-                            return navigator.serviceWorker
-                                .getRegistration()
-                                .then((reg) => {
-                                    if (reg) {
-                                        // eslint-disable-next-line promise/no-nesting
-                                        return reg
-                                            .unregister()
-                                            .then(() => self.location.reload())
-                                            .catch((e) => console.error(e));
-                                    }
-
-                                    return self.location.reload();
-                                })
-                                .catch((e) => {
-                                    console.error(e);
-                                    self.location.reload();
-                                });
-                        }
-
-                        return self.location.reload();
-                    })
+                    .then(() => ('serviceWorker' in navigator ? navigator.serviceWorker.getRegistration() : null))
+                    .then((reg) => reg?.unregister())
+                    .then(() => self.location.reload())
                     .catch((e) => {
                         console.error(e);
                         self.location.reload();

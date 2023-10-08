@@ -1,11 +1,12 @@
-import webpack from 'webpack';
+import { type Configuration, DefinePlugin, ProvidePlugin } from 'webpack';
+import { type Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { InjectManifest } from 'workbox-webpack-plugin';
 import { HwpAttributesPlugin } from 'hwp-attributes-plugin';
 import { execSync } from 'child_process';
-import { OptimizeOptions } from 'svgo';
+import { Config as SVGOConfig } from 'svgo';
 
 let version: string;
 try {
@@ -18,7 +19,7 @@ try {
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const config: webpack.Configuration = {
+export const commonConfiguration: Configuration & { devServer: DevServerConfiguration } = {
     context: path.resolve(__dirname, '..'),
     entry: {
         bundle: path.resolve(__dirname, '../src/index.tsx'),
@@ -26,7 +27,7 @@ const config: webpack.Configuration = {
     output: {
         path: path.resolve(__dirname, '../dist'),
         filename: '[name].[contenthash:5].min.mjs',
-        chunkFilename: '[name].[chunkhash:5].min.mjs',
+        chunkFilename: '[name].[contenthash:5].min.mjs',
         assetModuleFilename: '[name].[contenthash:5][ext]',
         publicPath: '/',
         pathinfo: !isProd,
@@ -36,7 +37,7 @@ const config: webpack.Configuration = {
     },
     node: false,
     devtool: isProd ? 'source-map' : 'eval-cheap-source-map',
-    mode: (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'none',
+    mode: (process.env.NODE_ENV ?? 'development') as 'development' | 'production' | 'none',
     resolve: {
         extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
         alias: {
@@ -100,7 +101,7 @@ const config: webpack.Configuration = {
                                     },
                                 },
                             ],
-                        } as OptimizeOptions,
+                        } as SVGOConfig,
                     },
                 ],
             },
@@ -114,12 +115,12 @@ const config: webpack.Configuration = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new webpack.DefinePlugin({
+        new DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
             'process.env.BUILD_SSR': JSON.stringify(false),
             'process.env.APP_VERSION': JSON.stringify(version),
         }),
-        new webpack.ProvidePlugin({
+        new ProvidePlugin({
             h: ['preact', 'h'],
             Fragment: ['preact', 'Fragment'],
         }),
@@ -154,5 +155,3 @@ const config: webpack.Configuration = {
         }),
     ],
 };
-
-export default config;

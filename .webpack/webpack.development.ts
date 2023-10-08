@@ -1,11 +1,10 @@
-import webpack from 'webpack';
+import type { Configuration } from 'webpack';
 import { merge } from 'webpack-merge';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import { commonConfiguration } from './webpack.common';
 
-import commonConfig from './webpack.common';
-
-export default function (): webpack.Configuration {
-    return merge(commonConfig, {
+export function developmentConfiguration(): Configuration {
+    return merge(commonConfiguration, {
         mode: 'development',
         module: {
             rules: [
@@ -15,13 +14,6 @@ export default function (): webpack.Configuration {
                 },
             ],
         },
-        plugins: [
-            new ForkTsCheckerWebpackPlugin({
-                eslint: {
-                    enabled: true,
-                    files: ['src/**/*.{ts,tsx}'],
-                },
-            }),
-        ],
-    } as webpack.Configuration);
+        plugins: [new ForkTsCheckerWebpackPlugin()],
+    } as Configuration);
 }
