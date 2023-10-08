@@ -4,12 +4,12 @@
   "version": "3.2.0",
   "scripts": {
     "dev": "webpack serve",
+    "typecheck": "tsc --noEmit",
     "prebuild": "npm run lint",
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development",
     "lint": "eslint -f gha .",
     "lint:fix": "eslint --fix .",
-    "check-types": "tsc --noemit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

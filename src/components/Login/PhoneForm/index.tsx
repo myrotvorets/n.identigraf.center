@@ -30,13 +30,9 @@ export default class PhoneForm extends Component<Props, State> {
     public componentDidMount(): void {
         this._inputRef.current?.focus();
         if (this._buttonRef.current) {
-            this._verifier = new RecaptchaVerifier(
-                this._buttonRef.current,
-                {
-                    size: 'invisible',
-                },
-                getAuth(),
-            );
+            this._verifier = new RecaptchaVerifier(getAuth(), this._buttonRef.current, {
+                size: 'invisible',
+            });
         } else {
             throw new Error('_buttonRef.current is null');
         }
