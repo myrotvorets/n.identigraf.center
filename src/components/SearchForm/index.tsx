@@ -2,6 +2,7 @@ import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import Bugsnag from '@bugsnag/js';
 import type { User } from 'firebase/auth';
+import { TargetedEvent } from 'preact/compat';
 import Alert from '../Alert';
 import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
@@ -25,6 +26,7 @@ interface State {
     image: string;
     uploadProgress: number | null;
     error: string | null;
+    minSimilarity: number;
 }
 
 class SearchForm extends Component<Props, State> {
@@ -32,6 +34,7 @@ class SearchForm extends Component<Props, State> {
         image: '',
         uploadProgress: null,
         error: null,
+        minSimilarity: 30,
     };
 
     private readonly _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
@@ -69,6 +72,19 @@ class SearchForm extends Component<Props, State> {
                 return req.send(data);
             })
             .catch((err: FirebaseError) => this._setError(decodeFirebaseError(err.code, err.message)));
+    };
+
+    private readonly _onSimilarityChange = ({ currentTarget }: TargetedEvent<HTMLInputElement>): void => {
+        let value = currentTarget.valueAsNumber;
+        if (value < 5) {
+            value = 5;
+        }
+
+        if (value > 80) {
+            value = 80;
+        }
+
+        this.setState({ minSimilarity: value });
     };
 
     private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
@@ -111,7 +127,7 @@ class SearchForm extends Component<Props, State> {
     }
 
     public render(): ComponentChild {
-        const { error, image, uploadProgress } = this.state;
+        const { error, image, minSimilarity, uploadProgress } = this.state;
 
         return (
             <section className="searchform">
@@ -122,7 +138,7 @@ class SearchForm extends Component<Props, State> {
 
                     {error && <Alert message={error} />}
 
-                    <label htmlFor="photo" className="required">
+                    <label for="photo" htmlFor="photo" className="required">
                         Світлина для розпізнавання
                     </label>
                     <input
@@ -134,6 +150,27 @@ class SearchForm extends Component<Props, State> {
                         accept="image/png, image/jpeg"
                         disabled={uploadProgress !== null}
                     />
+
+                    <label for="minSimilarity" htmlFor="minSimilarity">
+                        Мінімальна схожість:
+                    </label>
+                    <div className="input-group">
+                        <input
+                            type="number"
+                            required
+                            value={minSimilarity}
+                            min={5}
+                            max={80}
+                            step={1}
+                            id="minSimilarity"
+                            name="minSimilarity"
+                            onInput={this._onSimilarityChange}
+                            className="form-control"
+                        />
+                        <div className="input-group-append">
+                            <span className="input-group-text">%</span>
+                        </div>
+                    </div>
 
                     {image.length > 0 ? <img src={image} alt="Завантажена світлина" className="photo" /> : null}
 

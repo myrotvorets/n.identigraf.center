@@ -69,7 +69,9 @@ export default class PhoneForm extends Component<Props, State> {
 
                 {error && <Alert message={error} />}
 
-                <label htmlFor="phone">Телефон:</label>
+                <label htmlFor="phone" for="phone">
+                    Телефон:
+                </label>
                 <div className="input-group">
                     <div className="input-group-prepend">
                         <span className="input-group-text">+380</span>

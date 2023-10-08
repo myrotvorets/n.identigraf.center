@@ -99,6 +99,7 @@ export default class SearchResults extends Component<Props, State> {
             .catch((e: Error) => Bugsnag.notify(e));
     }
 
+    // eslint-disable-next-line class-methods-use-this
     private readonly _renderMatchedFace = (face: FoundFace, index: number): ComponentChild => {
         return (
             <li key={index}>

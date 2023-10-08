@@ -63,7 +63,9 @@ export default class CodeForm extends Component<Props> {
                     </a>
                 </p>
 
-                <label htmlFor="code">Код:</label>
+                <label htmlFor="code" for="code">
+                    Код:
+                </label>
                 <input
                     type="number"
                     required
