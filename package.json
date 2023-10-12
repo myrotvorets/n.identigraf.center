@@ -29,12 +29,12 @@
     "workbox-strategies": "^7.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.0",
+    "@babel/core": "^7.23.2",
     "@babel/plugin-transform-class-properties": "^7.22.5",
     "@babel/plugin-transform-numeric-separator": "^7.22.11",
     "@babel/plugin-transform-optional-chaining": "^7.23.0",
     "@babel/plugin-transform-react-jsx": "^7.22.15",
-    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-env": "^7.23.2",
     "@babel/preset-typescript": "^7.23.2",
     "@myrotvorets/eslint-config-myrotvorets-preact-ts": "^2.7.0",
     "@types/grecaptcha": "^3.0.5",
@@ -62,7 +62,7 @@
     "postcss-loader": "^7.3.3",
     "purgecss-webpack-plugin": "^5.0.0",
     "ref-loader": "^1.0.3",
-    "sass": "^1.69.2",
+    "sass": "^1.69.3",
     "sass-loader": "^13.3.2",
     "stack-trace": "^0.0.10",
     "style-loader": "^3.3.3",
