@@ -1,17 +1,18 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
-import { ConfirmationResult, RecaptchaVerifier, User, signInWithPhoneNumber } from 'firebase/auth';
+import { ConfirmationResult, /* RecaptchaVerifier, */ type User /* , signInWithPhoneNumber */ } from 'firebase/auth';
 import { ActionMap } from 'unistore';
 import Loader from '../Loader';
 import { AppState } from '../../redux/store';
 import { setUser } from '../../redux/actions';
 import API, { FirebaseError, decodeErrorResponse, decodeFirebaseError } from '../../api';
 import CodeForm from './CodeForm';
-import PhoneForm from './PhoneForm';
+// import PhoneForm from './PhoneForm';
+import EmailForm from './EmailForm';
+// import { auth } from '../../config/firebase';
 
 import './login.scss';
-import { auth } from '../../config/firebase';
 
 type OwnProps = unknown;
 interface MappedProps {
@@ -72,36 +73,36 @@ class Login extends Component<Props, State> {
         }
     };
 
-    private readonly _onPhoneFormSubmit = async (
-        phone: string,
-        verifier: RecaptchaVerifier,
-        widgetId: number,
-    ): Promise<void> => {
-        const ph = `+380${phone.replace(/\D/gu, '')}`;
+    // private readonly _onPhoneFormSubmit = async (
+    //     phone: string,
+    //     verifier: RecaptchaVerifier,
+    //     widgetId: number,
+    // ): Promise<void> => {
+    //     const ph = `+380${phone.replace(/\D/gu, '')}`;
 
-        const response = await API.checkPhone(ph);
-        if (response.success) {
-            try {
-                const result = await signInWithPhoneNumber(auth, ph, verifier);
-                this.setState({ confirmation: result, error: null, state: 'idle', phone });
-            } catch (e) {
-                this.setState({
-                    state: 'idle',
-                    error: decodeFirebaseError((e as FirebaseError).code, (e as FirebaseError).message),
-                    phone,
-                });
+    //     const response = await API.checkPhone(ph);
+    //     if (response.success) {
+    //         try {
+    //             const result = await signInWithPhoneNumber(auth, ph, verifier);
+    //             this.setState({ confirmation: result, error: null, state: 'idle', phone });
+    //         } catch (e) {
+    //             this.setState({
+    //                 state: 'idle',
+    //                 error: decodeFirebaseError((e as FirebaseError).code, (e as FirebaseError).message),
+    //                 phone,
+    //             });
 
-                /* global grecaptcha */
-                grecaptcha.reset(widgetId);
-            }
-        } else {
-            this.setState({
-                error: decodeErrorResponse(response),
-                state: 'idle',
-                phone,
-            });
-        }
-    };
+    //             /* global grecaptcha */
+    //             grecaptcha.reset(widgetId);
+    //         }
+    //     } else {
+    //         this.setState({
+    //             error: decodeErrorResponse(response),
+    //             state: 'idle',
+    //             phone,
+    //         });
+    //     }
+    // };
 
     private readonly _onResetCodeForm = (): void => {
         this.setState({
@@ -134,7 +135,8 @@ class Login extends Component<Props, State> {
                         onCodeSubmit={this._onCodeFormSubmit}
                     />
                 ) : (
-                    <PhoneForm error={error} state={state} onPhoneSubmit={this._onPhoneFormSubmit} />
+                    // <PhoneForm error={error} state={state} onPhoneSubmit={this._onPhoneFormSubmit} />
+                    <EmailForm />
                 )}
             </section>
         );

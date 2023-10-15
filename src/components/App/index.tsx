@@ -43,6 +43,17 @@ function suspenseWrapper<T>(C: ComponentType<T>): (props: RenderableProps<T>) =>
     );
 }
 
+const AuthRoute = process.env.BUILD_SSR
+    ? (): null => null
+    : lazy(
+          () =>
+              import(
+                  /* webpackChunkName: "login" */
+                  /* webpackPrefetch: true */
+                  '../../components/Authenticator'
+              ),
+      );
+
 const HomeRoute = lazy(
     () =>
         import(
@@ -150,6 +161,7 @@ class App extends Component<Props, State> {
 
                         <Router>
                             <Route path="/" component={suspenseWrapper(HomeRoute)} />
+                            <Route path="/auth" component={suspenseWrapper(AuthRoute)} />
                             <Route path="/contacts" component={suspenseWrapper(ContactsRoute)} />
                             <Route path="/guide" component={suspenseWrapper(GuideRoute)} />
                             <Route path="/requirements" component={suspenseWrapper(RequirementsRoute)} />
