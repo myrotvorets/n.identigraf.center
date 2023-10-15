@@ -44,7 +44,7 @@ class SearchForm extends Component<Props, State> {
         if (f?.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.addEventListener('load', ({ target }: ProgressEvent<FileReader>): void => {
-                this.setState({ image: (target as FileReader).result as string });
+                this.setState({ image: target!.result as string });
             });
 
             reader.readAsDataURL(f);
@@ -55,7 +55,7 @@ class SearchForm extends Component<Props, State> {
 
     private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        const user = this.props.user as User;
+        const user = this.props.user!;
         const data = new FormData(e.currentTarget);
 
         this.setState({ uploadProgress: 0, error: null });
@@ -69,7 +69,7 @@ class SearchForm extends Component<Props, State> {
                 req.addEventListener('load', this._onUploadSucceeded);
                 req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/search');
                 req.setRequestHeader('Authorization', `Bearer ${token}`);
-                return req.send(data);
+                req.send(data);
             })
             .catch((err: FirebaseError) => this._setError(decodeFirebaseError(err.code, err.message)));
     };

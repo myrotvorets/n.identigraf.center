@@ -1,3 +1,4 @@
+import './config/firebase';
 import { h, render } from 'preact';
 import { Provider } from 'unistore/preact';
 import App from './components/App';
@@ -49,6 +50,7 @@ if (!process.env.BUILD_SSR) {
     const ver = document.getElementById('version');
     if (ver) {
         ver.addEventListener('click', () => {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (self.caches) {
                 self.caches
                     .keys()

@@ -18,7 +18,7 @@ export default class Alert extends Component<Props> {
 
     public render(): ComponentChild {
         return (
-            <div className={`alert ${this.props.className || ''}`} role="alert" ref={this._ref}>
+            <div className={`alert ${this.props.className ?? ''}`} role="alert" ref={this._ref}>
                 {this.props.message ? this.props.message : this.props.children}
             </div>
         );

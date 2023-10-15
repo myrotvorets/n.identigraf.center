@@ -94,7 +94,7 @@ export default class SearchResults extends Component<Props, State> {
         Promise.all(capturedFaces.map(({ faceID }) => API.getMatchedFaces(guid, faceID)))
             .then((responses) => {
                 responses.forEach((response) => this._addMatches(response.success ? response.matches : null));
-                return this.setState({ state: 'done' });
+                this.setState({ state: 'done' });
             })
             .catch((e: Error) => Bugsnag.notify(e));
     }
@@ -110,7 +110,7 @@ export default class SearchResults extends Component<Props, State> {
 
     private _renderMatchedFaces(faceID: number, index: number): ComponentChild {
         const { matchedFaces } = this.state;
-        const faces = matchedFaces[index];
+        const faces = matchedFaces[index] as FoundFace[] | null | undefined;
         return (
             <div className="matched-faces">
                 {faces === undefined ? (

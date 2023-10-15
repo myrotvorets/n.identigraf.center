@@ -1,9 +1,8 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
-import { ConfirmationResult, RecaptchaVerifier, User, getAuth, signInWithPhoneNumber } from 'firebase/auth';
+import { ConfirmationResult, RecaptchaVerifier, User, signInWithPhoneNumber } from 'firebase/auth';
 import { ActionMap } from 'unistore';
-import Bugsnag from '@bugsnag/js';
 import Loader from '../Loader';
 import { AppState } from '../../redux/store';
 import { setUser } from '../../redux/actions';
@@ -12,6 +11,7 @@ import CodeForm from './CodeForm';
 import PhoneForm from './PhoneForm';
 
 import './login.scss';
+import { auth } from '../../config/firebase';
 
 type OwnProps = unknown;
 interface MappedProps {
@@ -52,7 +52,7 @@ class Login extends Component<Props, State> {
         this.setState({ state: 'busy' });
         try {
             const { user } = await confirmation.confirm(code);
-            const idToken = (await user?.getIdToken()) || '';
+            const idToken = await user.getIdToken();
             const r = await API.login(idToken);
             if (r.success) {
                 route('/search');
@@ -72,30 +72,33 @@ class Login extends Component<Props, State> {
         }
     };
 
-    private readonly _onPhoneFormSubmit = async (phone: string, verifier: RecaptchaVerifier): Promise<void> => {
+    private readonly _onPhoneFormSubmit = async (
+        phone: string,
+        verifier: RecaptchaVerifier,
+        widgetId: number,
+    ): Promise<void> => {
         const ph = `+380${phone.replace(/\D/gu, '')}`;
 
-        this.setState({ state: 'busy', phone });
         const response = await API.checkPhone(ph);
         if (response.success) {
             try {
-                const result = await signInWithPhoneNumber(getAuth(), ph, verifier);
-                this.setState({ confirmation: result, error: null, state: 'idle' });
+                const result = await signInWithPhoneNumber(auth, ph, verifier);
+                this.setState({ confirmation: result, error: null, state: 'idle', phone });
             } catch (e) {
                 this.setState({
                     state: 'idle',
                     error: decodeFirebaseError((e as FirebaseError).code, (e as FirebaseError).message),
+                    phone,
                 });
+
                 /* global grecaptcha */
-                verifier
-                    .render()
-                    .then((widgetId) => grecaptcha?.reset(widgetId))
-                    .catch((err: Error) => Bugsnag.notify(err));
+                grecaptcha.reset(widgetId);
             }
         } else {
             this.setState({
                 error: decodeErrorResponse(response),
                 state: 'idle',
+                phone,
             });
         }
     };

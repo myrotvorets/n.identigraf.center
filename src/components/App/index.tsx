@@ -3,9 +3,7 @@ import { Suspense, lazy as loafing } from 'preact/compat';
 import { Route, Router } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
 import { ActionMap } from 'unistore';
-import { initializeApp } from 'firebase/app';
-import { Unsubscribe, User, getAuth } from 'firebase/auth';
-import firebaseConfig from '../../config/firebase';
+import { Unsubscribe, User, onAuthStateChanged } from 'firebase/auth';
 import { AppState } from '../../redux/store';
 import { setUser } from '../../redux/actions';
 import Header from '../Header';
@@ -15,6 +13,7 @@ import Footer from '../Footer';
 import RussiaIsNotWelcomeHere from '../RussiaNotWelcomeHere';
 
 import './app.scss';
+import { auth } from '../../config/firebase';
 
 function lazy<T>(loader: () => Promise<{ default: T }> | { default: T }): T {
     if (process.env.BUILD_SSR) {
@@ -123,13 +122,10 @@ class App extends Component<Props, State> {
             isRussia: false,
             isFrame,
         };
-
-        initializeApp(firebaseConfig);
-        getAuth().useDeviceLanguage();
     }
 
     public componentDidMount(): void {
-        this._unsub = getAuth().onAuthStateChanged((user: User | null): void => {
+        this._unsub = onAuthStateChanged(auth, (user: User | null): void => {
             this.props.setUser(user);
         });
     }

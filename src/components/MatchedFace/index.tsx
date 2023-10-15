@@ -8,7 +8,7 @@ export default function MatchedFace(props: Props): h.JSX.Element {
         <Fragment>
             <strong class="name">
                 <a href={props.link ?? '#'} target="_blank" rel="noopener noreferrer">
-                    {props.name || 'Невідома людина'}
+                    {props.name ?? 'Невідома людина'}
                 </a>
             </strong>
             <div className="image-container">

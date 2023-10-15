@@ -7,7 +7,7 @@ import './home.scss';
 
 type OwnProps = unknown;
 interface MappedProps {
-    loggedIn: boolean;
+    loggedIn: boolean | null;
 }
 
 type Props = OwnProps & MappedProps;

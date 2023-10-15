@@ -4,7 +4,7 @@ export interface FirebaseError extends Error {
     code: string;
 }
 
-const errors: Record<string, string> = {
+const errors: Record<string, string | undefined> = {
     'auth/invalid-verification-code': 'Код підтвердження SMS недійсний.',
     'auth/too-many-requests':
         'Google заблокував усі запити з цього пристрою через незвичну активність. Спробуйте ще раз пізніше.',
@@ -21,7 +21,7 @@ const errors: Record<string, string> = {
 };
 
 export function decodeErrorCode(code: string): string {
-    return errors[code] || 'Несподівана помилка.';
+    return errors[code] ?? 'Несподівана помилка.';
 }
 
 export function decodeErrorResponse(r: ErrorResponse): string {

@@ -1,11 +1,12 @@
 import { Component, ComponentChild, RefObject, createRef, h } from 'preact';
-import { RecaptchaVerifier, getAuth } from 'firebase/auth';
+import { RecaptchaVerifier } from 'firebase/auth';
 import Alert from '../../Alert';
+import { auth } from '../../../config/firebase';
 
 interface Props {
     error: string | null;
     state: 'idle' | 'busy';
-    onPhoneSubmit: (phone: string, verifier: RecaptchaVerifier) => unknown;
+    onPhoneSubmit: (phone: string, verifier: RecaptchaVerifier, widgetId: number) => unknown;
 }
 
 interface State {
@@ -26,13 +27,18 @@ export default class PhoneForm extends Component<Props, State> {
     private readonly _buttonRef: RefObject<HTMLButtonElement> = createRef();
     private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
     private _verifier?: RecaptchaVerifier;
+    private _widgetId?: number;
 
-    public componentDidMount(): void {
+    public async componentDidMount(): Promise<void> {
         this._inputRef.current?.focus();
         if (this._buttonRef.current) {
-            this._verifier = new RecaptchaVerifier(getAuth(), this._buttonRef.current, {
+            this._verifier = new RecaptchaVerifier(auth, this._buttonRef.current, {
                 size: 'invisible',
+                callback: (): void => {
+                    this._onPhoneFormSubmit();
+                },
             });
+            this._widgetId = await this._verifier.render();
         } else {
             throw new Error('_buttonRef.current is null');
         }
@@ -52,11 +58,11 @@ export default class PhoneForm extends Component<Props, State> {
         this.setState({ phone: value });
     };
 
-    private readonly _onPhoneFormSubmit = (e: Event): void => {
-        e.preventDefault();
+    private readonly _onPhoneFormSubmit = (e?: Event): void => {
+        e?.preventDefault();
         const { agreed, phone } = this.state;
         if (agreed && PhoneForm.isPhoneValid(phone)) {
-            this.props.onPhoneSubmit(phone, this._verifier as RecaptchaVerifier);
+            this.props.onPhoneSubmit(phone, this._verifier!, this._widgetId!);
         }
     };
 
