@@ -1,25 +1,18 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import Bugsnag from '@bugsnag/js';
-import type { User } from 'firebase/auth';
 import { TargetedEvent } from 'preact/compat';
 import Alert from '../Alert';
 import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
 import UploadSubmitButton from '../UploadSubmitButton';
 import { withLoginCheck } from '../../hocs/withLoginCheck';
-import {
-    ErrorResponse,
-    FirebaseError,
-    SearchUploadResponse,
-    decodeErrorResponse,
-    decodeFirebaseError,
-} from '../../api';
+import { ErrorResponse, SearchUploadResponse, decodeErrorResponse } from '../../api';
 
 import './searchform.scss';
 
 interface Props {
-    user: User | null | undefined;
+    user: string | null | undefined;
 }
 
 interface State {
@@ -55,23 +48,19 @@ class SearchForm extends Component<Props, State> {
 
     private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        const user = this.props.user!;
+        const user = this.props.user;
         const data = new FormData(e.currentTarget);
 
         this.setState({ uploadProgress: 0, error: null });
-        user.getIdToken()
-            .then((token) => {
-                const req = new XMLHttpRequest();
-                req.upload.addEventListener('progress', this._onUploadProgress);
-                req.addEventListener('error', this._onUploadFailed);
-                req.addEventListener('abort', this._onUploadAborted);
-                req.addEventListener('timeout', this._onUploadTimeout);
-                req.addEventListener('load', this._onUploadSucceeded);
-                req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/search');
-                req.setRequestHeader('Authorization', `Bearer ${token}`);
-                req.send(data);
-            })
-            .catch((err: FirebaseError) => this._setError(decodeFirebaseError(err.code, err.message)));
+        const req = new XMLHttpRequest();
+        req.upload.addEventListener('progress', this._onUploadProgress);
+        req.addEventListener('error', this._onUploadFailed);
+        req.addEventListener('abort', this._onUploadAborted);
+        req.addEventListener('timeout', this._onUploadTimeout);
+        req.addEventListener('load', this._onUploadSucceeded);
+        req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/search');
+        req.setRequestHeader('Authorization', `Bearer ${user}`);
+        req.send(data);
     };
 
     private readonly _onSimilarityChange = ({ currentTarget }: TargetedEvent<HTMLInputElement>): void => {

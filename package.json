@@ -17,7 +17,6 @@
   "license": "MIT",
   "dependencies": {
     "@bugsnag/js": "^7.21.0",
-    "firebase": "^10.5.0",
     "preact": "^10.18.1",
     "preact-router": "^4.1.2",
     "unistore": "^3.5.2",

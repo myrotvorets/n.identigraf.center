@@ -3,7 +3,6 @@ import { Suspense, lazy as loafing } from 'preact/compat';
 import { Route, Router } from 'preact-router';
 import { ActionBinder, connect } from 'unistore/preact';
 import { ActionMap } from 'unistore';
-import { Unsubscribe, User, onAuthStateChanged } from 'firebase/auth';
 import { AppState } from '../../redux/store';
 import { setUser } from '../../redux/actions';
 import Header from '../Header';
@@ -11,9 +10,9 @@ import NavBar from '../NavBar';
 import Loader from '../Loader';
 import Footer from '../Footer';
 import RussiaIsNotWelcomeHere from '../RussiaNotWelcomeHere';
-
+import { lsGet } from '../../utils/localstorage';
+import API from '../../api';
 import './app.scss';
-import { auth } from '../../config/firebase';
 
 function lazy<T>(loader: () => Promise<{ default: T }> | { default: T }): T {
     if (process.env.BUILD_SSR) {
@@ -42,17 +41,6 @@ function suspenseWrapper<T>(C: ComponentType<T>): (props: RenderableProps<T>) =>
         </main>
     );
 }
-
-const AuthRoute = process.env.BUILD_SSR
-    ? (): null => null
-    : lazy(
-          () =>
-              import(
-                  /* webpackChunkName: "login" */
-                  /* webpackPrefetch: true */
-                  '../../components/Authenticator'
-              ),
-      );
 
 const HomeRoute = lazy(
     () =>
@@ -101,16 +89,15 @@ const ContactsRoute = lazy(() => import(/* webpackChunkName: "contacts" */ '../.
 const GuideRoute = lazy(() => import(/* webpackChunkName: "guide" */ '../../components/Guide'));
 const RequirementsRoute = lazy(() => import(/* webpackChunkName: "reqs" */ '../../components/Requirements'));
 
-type OwnProps = unknown;
 interface MappedProps {
-    user: User | null | undefined;
+    user: string | null | undefined;
 }
 
 interface ActionProps extends ActionMap<AppState> {
     setUser: typeof setUser;
 }
 
-type Props = OwnProps & MappedProps & ActionBinder<AppState, ActionProps>;
+type Props = MappedProps & ActionBinder<AppState, ActionProps>;
 
 interface State {
     isRussia: boolean;
@@ -118,8 +105,6 @@ interface State {
 }
 
 class App extends Component<Props, State> {
-    private _unsub: Unsubscribe | undefined;
-
     public constructor(props: Props) {
         super(props);
         let isFrame = false;
@@ -135,14 +120,17 @@ class App extends Component<Props, State> {
         };
     }
 
-    public componentDidMount(): void {
-        this._unsub = onAuthStateChanged(auth, (user: User | null): void => {
-            this.props.setUser(user);
-        });
-    }
+    public async componentDidMount(): Promise<void> {
+        const token = lsGet('token');
+        if (token) {
+            const valid = await API.verifyToken(token);
+            if (valid === true) {
+                this.props.setUser(token);
+                return;
+            }
+        }
 
-    public componentWillUnmount(): void {
-        this._unsub?.();
+        this.props.setUser(null);
     }
 
     public render(): ComponentChild {
@@ -161,7 +149,6 @@ class App extends Component<Props, State> {
 
                         <Router>
                             <Route path="/" component={suspenseWrapper(HomeRoute)} />
-                            <Route path="/auth" component={suspenseWrapper(AuthRoute)} />
                             <Route path="/contacts" component={suspenseWrapper(ContactsRoute)} />
                             <Route path="/guide" component={suspenseWrapper(GuideRoute)} />
                             <Route path="/requirements" component={suspenseWrapper(RequirementsRoute)} />
@@ -187,4 +174,4 @@ function mapStateToProps(state: AppState): MappedProps {
     };
 }
 
-export default connect<OwnProps, State, AppState, MappedProps, ActionProps>(mapStateToProps, { setUser })(App);
+export default connect<unknown, State, AppState, MappedProps, ActionProps>(mapStateToProps, { setUser })(App);

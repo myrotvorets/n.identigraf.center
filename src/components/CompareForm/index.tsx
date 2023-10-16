@@ -1,24 +1,17 @@
 import { Component, ComponentChild, h } from 'preact';
 import { route } from 'preact-router';
 import Bugsnag from '@bugsnag/js';
-import type { User } from 'firebase/auth';
 import Alert from '../Alert';
 import ReadRequirements from '../ReadRequirements';
 import UploadProgress from '../UploadProgress';
 import UploadSubmitButton from '../UploadSubmitButton';
 import { withLoginCheck } from '../../hocs/withLoginCheck';
-import {
-    CompareUploadResponse,
-    ErrorResponse,
-    FirebaseError,
-    decodeErrorResponse,
-    decodeFirebaseError,
-} from '../../api';
+import { CompareUploadResponse, ErrorResponse, decodeErrorResponse } from '../../api';
 
 import '../SearchForm/searchform.scss';
 
 interface Props {
-    user: User | null | undefined;
+    user: string | null | undefined;
 }
 
 interface State {
@@ -49,19 +42,15 @@ class CompareForm extends Component<Props, State> {
         const data = new FormData(e.currentTarget);
 
         this.setState({ uploadProgress: 0, error: null });
-        user.getIdToken()
-            .then((token) => {
-                const req = new XMLHttpRequest();
-                req.upload.addEventListener('progress', this._onUploadProgress);
-                req.addEventListener('error', this._onUploadFailed);
-                req.addEventListener('abort', this._onUploadAborted);
-                req.addEventListener('timeout', this._onUploadTimeout);
-                req.addEventListener('load', this._onUploadSucceeded);
-                req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/compare');
-                req.setRequestHeader('Authorization', `Bearer ${token}`);
-                req.send(data);
-            })
-            .catch((err: FirebaseError) => this._setError(decodeFirebaseError(err.code, err.message)));
+        const req = new XMLHttpRequest();
+        req.upload.addEventListener('progress', this._onUploadProgress);
+        req.addEventListener('error', this._onUploadFailed);
+        req.addEventListener('abort', this._onUploadAborted);
+        req.addEventListener('timeout', this._onUploadTimeout);
+        req.addEventListener('load', this._onUploadSucceeded);
+        req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/compare');
+        req.setRequestHeader('Authorization', `Bearer ${user}`);
+        req.send(data);
     };
 
     private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {

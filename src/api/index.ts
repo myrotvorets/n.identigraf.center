@@ -6,12 +6,89 @@ import type {
     LoginResponse,
     MatchedFacesResponse,
     SearchStatusResponse,
+    VerifyCodeResponse,
 } from './types';
 export * from './errors';
 export * from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class API {
+    public static async sendCode(email: string): Promise<ErrorResponse | true> {
+        const headers: Record<string, string> = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        };
+
+        try {
+            const response = await fetch('https://api2.myrotvorets.center/identigraf-auth/v2/send-code', {
+                headers,
+                method: 'POST',
+                body: JSON.stringify({ email }),
+            });
+
+            if (response.status === 204) {
+                return true;
+            }
+
+            return {
+                success: false,
+                status: response.status,
+                code: 'UNKNOWN_ERROR',
+                message: 'Невідома помилка',
+            };
+        } catch (e) {
+            Bugsnag.notify(e as Error);
+            return {
+                success: false,
+                status: 502,
+                code: 'COMM_ERROR',
+                message: 'Помилка спілкування з сервером',
+            };
+        }
+    }
+
+    public static verifyCode(email: string, code: string): Promise<VerifyCodeResponse | ErrorResponse> {
+        return API.post('/identigraf-auth/v2/verify-code', { email, code });
+    }
+
+    public static async verifyToken(token: string): Promise<ErrorResponse | boolean> {
+        const headers: Record<string, string> = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        };
+
+        try {
+            const response = await fetch('https://api2.myrotvorets.center/identigraf-auth/v2/verify-token', {
+                headers,
+                method: 'POST',
+                body: JSON.stringify({ token }),
+            });
+
+            if (response.status === 204) {
+                return true;
+            }
+
+            if (response.status === 401) {
+                return false;
+            }
+
+            return {
+                success: false,
+                status: response.status,
+                code: 'UNKNOWN_ERROR',
+                message: 'Невідома помилка',
+            };
+        } catch (e) {
+            Bugsnag.notify(e as Error);
+            return {
+                success: false,
+                status: 502,
+                code: 'COMM_ERROR',
+                message: 'Помилка спілкування з сервером',
+            };
+        }
+    }
+
     public static checkPhone(phone: string): Promise<CheckPhoneResponse | ErrorResponse> {
         return API.post('/identigraf-auth/v2/checkphone', { phone });
     }

@@ -2,15 +2,14 @@
 import { ComponentConstructor, ComponentType, h } from 'preact';
 import { connect } from 'unistore/preact';
 import { route } from 'preact-router';
-import type { User } from 'firebase/auth';
-import { AppState } from '../redux/store';
+import type { AppState } from '../redux/store';
 import Loader from '../components/Loader';
 
 type UserState = 'unknown' | 'visitor' | 'user';
 
 interface MappedProps {
     state: UserState;
-    user: User | null | undefined;
+    user: string | null | undefined;
 }
 
 function mapStateToProps({ user }: AppState): MappedProps {

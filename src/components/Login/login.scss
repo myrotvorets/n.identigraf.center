@@ -81,4 +81,23 @@
             margin-bottom: 0;
         }
     }
+
+    .button-container {
+        margin-top: 1em;
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    
+        button {
+            margin: .5em;
+            min-width: 12em;
+        }
+    }
+    
+    button.link {
+        background: transparent;
+        border: 0;
+        color: $color-highlight-on-surface;
+        padding-left: 0;
+    }
 }

@@ -1,4 +1,3 @@
-import './config/firebase';
 import { h, render } from 'preact';
 import { Provider } from 'unistore/preact';
 import App from './components/App';

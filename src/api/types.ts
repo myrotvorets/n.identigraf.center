@@ -5,6 +5,11 @@ export interface ErrorResponse {
     message: string;
 }
 
+export interface VerifyCodeResponse {
+    success: true;
+    token: string;
+}
+
 export interface CheckPhoneResponse {
     success: true;
     user: {
