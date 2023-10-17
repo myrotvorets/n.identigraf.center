@@ -1,16 +1,12 @@
 import { h, render } from 'preact';
-import { Provider } from 'unistore/preact';
 import App from './components/App';
 import ErrorBoundary from './components/ErrorBoundary';
-import store from './redux/store';
 import './lib/bugsnag';
 
 export default function Application(): h.JSX.Element {
     return (
         <ErrorBoundary>
-            <Provider store={store}>
-                <App />
-            </Provider>
+            <App />
         </ErrorBoundary>
     );
 }

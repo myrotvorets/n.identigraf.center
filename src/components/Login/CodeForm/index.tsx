@@ -1,147 +1,122 @@
-import { Component, ComponentChild, RefObject, createRef, h } from 'preact';
-import { route } from 'preact-router';
-import type { ActionMap } from 'unistore';
-import { ActionBinder, connect } from 'unistore/preact';
-import API, { decodeErrorResponse } from '../../../api';
-import { AppState } from '../../../redux/store';
-import { setUser } from '../../../redux/actions';
-import { lsSet } from '../../../utils/localstorage';
+import { h } from 'preact';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { Alert, Button, Card, Form } from 'react-bootstrap';
+import { CardHeader } from '../../CardHeader';
+import { Paragraph } from '../../Paragraph';
 
-interface ActionProps extends ActionMap<AppState> {
-    setUser: typeof setUser;
-}
+export type CodeFormState = 'link_sent' | 'verifying';
 
-interface OwnProps {
+interface Props {
     email: string;
-    onReset: () => unknown;
+    error: string;
+    state: CodeFormState;
     onIssues: () => unknown;
+    onReset: () => unknown;
+    onSubmit: (code: string) => unknown;
 }
 
-type Props = ActionBinder<AppState, ActionProps> & OwnProps;
+const isCodeValid = (code: string): boolean => /^\d{6}$/u.test(code);
 
-interface State {
-    code: string;
-    state: 'idle' | 'busy';
-    error: string | null;
-}
+export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: Props): h.JSX.Element {
+    const [code, setCode] = useState('');
+    const [codeValid, setCodeValid] = useState<boolean | undefined>(undefined);
+    const ref = useRef<HTMLInputElement>(null);
 
-class CodeForm extends Component<Props, State> {
-    private static isCodeValid(code: string): boolean {
-        return /^\d{6}$/u.test(code);
-    }
+    const onFormSubmit = useCallback(
+        (e: h.JSX.TargetedEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            if (codeValid) {
+                onSubmit(code);
+            } else {
+                ref.current?.focus();
+                ref.current?.reportValidity();
+            }
+        },
+        [code, codeValid, onSubmit],
+    );
 
-    public state: Readonly<State> = {
-        code: '',
-        state: 'idle',
-        error: null,
-    };
-
-    private readonly _inputRef: RefObject<HTMLInputElement> = createRef();
-
-    public componentDidMount(): void {
-        this._inputRef.current?.focus();
-    }
-
-    public componentDidUpdate(): void {
-        this._inputRef.current?.focus();
-    }
-
-    private readonly _onResetClicked = (e: Event): void => {
-        e.preventDefault();
-        this.props.onReset();
-    };
-
-    private readonly _onCodeFormSubmit = async (e: Event): Promise<void> => {
-        e.preventDefault();
-
-        const verifyResult = await API.verifyCode(this.props.email, this.state.code);
-        if (!verifyResult.success) {
-            this.setState({
-                error: decodeErrorResponse(verifyResult),
-                state: 'idle',
-                code: '',
-            });
-
-            return;
-        }
-
-        const { token } = verifyResult;
-
-        const r = await API.login(token);
-        if (r.success) {
-            lsSet('token', token);
-            this.props.setUser(token);
-            route('/search');
-        } else {
-            this.setState({
-                error: decodeErrorResponse(r),
-                state: 'idle',
-                code: '',
-            });
-        }
-    };
-
-    private readonly _onInputChanged = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    const onCodeUpdate = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { value } = currentTarget;
-        this.setState({ code: value });
-    };
+        setCode(value);
+        setCodeValid(isCodeValid(value));
+    }, []);
 
-    public render(): ComponentChild {
-        const { email, onIssues } = this.props;
-        const { code, error, state } = this.state;
-        return (
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            <form className="block" onSubmit={this._onCodeFormSubmit}>
-                <header className="block__header">Підтвердьте вашу адресу електронної пошти</header>
+    const onCancelClicked = useCallback(() => {
+        if (state !== 'verifying') {
+            onReset();
+        }
+    }, [state, onReset]);
 
-                {error && <div className="alert">{error}</div>}
+    const onIssuesClicked = useCallback(() => {
+        if (state !== 'verifying') {
+            onIssues();
+        }
+    }, [state, onIssues]);
 
-                <p>
-                    Будь ласка, введіть 6-значний код, який ми надіслали на{' '}
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                    <a href="#" onClick={this._onResetClicked} role="button">
-                        {email}
-                    </a>
-                </p>
+    useEffect(() => {
+        ref.current?.focus();
+    }, []);
 
-                <label htmlFor="code" for="code">
-                    Код:
-                </label>
-                <input
-                    type="number"
-                    required
-                    id="code"
-                    placeholder="000000"
-                    max={999999}
-                    value={code}
-                    onInput={this._onInputChanged}
-                    autoComplete="off"
-                    ref={this._inputRef}
-                />
-
-                <p>
-                    <button type="submit" disabled={!CodeForm.isCodeValid(code) || state !== 'idle'}>
-                        {state === 'busy' ? 'Перевірка триває…' : 'Продовжити'}
-                    </button>{' '}
-                    <button type="button" className="cancel" onClick={this._onResetClicked}>
-                        Скасувати
-                    </button>
-                </p>
-
-                <p>
-                    <button type="button" onClick={onIssues} className="link">
-                        Проблеми з отриманням електронних листів?
-                    </button>
-                </p>
-            </form>
-        );
-    }
+    return (
+        <Card as="form" onSubmit={onFormSubmit}>
+            <CardHeader>Підтвердьте адресу електронної пошти</CardHeader>
+            <Card.Body>
+                {error && <Alert variant="danger">{error}</Alert>}
+                <Paragraph>
+                    Будь ласка, введіть 6-значний код, який ми надіслали на <strong>{email}</strong>
+                </Paragraph>
+                <Form.Group className="mb-3" controlId="code">
+                    <Form.Label>
+                        Код перевірки<span className="sr-only"> (обов'язкове поле)</span>:
+                    </Form.Label>
+                    <Form.Control
+                        type="text"
+                        inputMode="numeric"
+                        required
+                        value={code}
+                        onChangeCapture={onCodeUpdate}
+                        isInvalid={codeValid === false}
+                        isValid={codeValid === true}
+                        readOnly={state === 'verifying'}
+                        aria-invalid={codeValid !== undefined ? `${!codeValid}` : undefined}
+                        aria-describedby={codeValid !== false ? undefined : 'email-error'}
+                        aria-disabled={state === 'verifying' ? 'true' : 'false'}
+                        ref={ref}
+                        format="[0-9]{6}"
+                    />
+                    {codeValid === false && (
+                        <Form.Control.Feedback type="invalid" id="email-error">
+                            Невірний формат коду перевірки.
+                        </Form.Control.Feedback>
+                    )}
+                </Form.Group>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    className="mb-2"
+                    aria-disabled={state === 'verifying' || !codeValid ? 'true' : 'false'}
+                >
+                    {state !== 'verifying' ? 'Продовжити' : 'Перевірка триває…'}
+                </Button>{' '}
+                <Button
+                    type="button"
+                    variant="danger"
+                    className="mb-2"
+                    onClick={onCancelClicked}
+                    aria-disabled={state === 'verifying' ? 'true' : 'false'}
+                >
+                    Скасувати
+                </Button>
+            </Card.Body>
+            <Card.Footer>
+                <Button
+                    variant="link"
+                    onClick={onIssuesClicked}
+                    aria-disabled={state === 'verifying' ? 'true' : 'false'}
+                >
+                    Проблеми з отриманням електронних листів?
+                </Button>
+            </Card.Footer>
+        </Card>
+    );
 }
-
-function mapStateToProps(state: AppState): Partial<AppState> {
-    return state;
-}
-
-export default connect<OwnProps, unknown, AppState, unknown, ActionProps>(mapStateToProps, {
-    setUser,
-})(CodeForm);

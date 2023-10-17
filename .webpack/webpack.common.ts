@@ -3,7 +3,6 @@ import { type Configuration as DevServerConfiguration } from 'webpack-dev-server
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
-import { InjectManifest } from 'workbox-webpack-plugin';
 import { HwpAttributesPlugin } from 'hwp-attributes-plugin';
 import { execSync } from 'child_process';
 import { Config as SVGOConfig } from 'svgo';
@@ -141,14 +140,10 @@ export const commonConfiguration: Configuration & { devServer: DevServerConfigur
                 keepClosingSlash: true,
                 html5: true,
                 minifyCSS: true,
+                minifyJS: true,
                 sortAttributes: true,
                 sortClassName: true,
             },
-        }),
-        new InjectManifest({
-            swSrc: './src/sw.ts',
-            include: ['index.html', /\.js$/u, /\.svg$/u, /\.css$/u],
-            dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(js|css)/u,
         }),
         new HwpAttributesPlugin({
             module: ['/**.mjs'],

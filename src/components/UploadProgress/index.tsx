@@ -1,21 +1,19 @@
 import { h } from 'preact';
 
-import './uploadprogress.scss';
-
 interface Props {
-    progress: number | null | undefined;
+    progress: number;
 }
 
-export default function UploadProgress({ progress }: Props): h.JSX.Element | null {
-    if (progress === null || progress === undefined) {
+export function UploadProgress({ progress }: Props): h.JSX.Element | null {
+    if (isNaN(progress)) {
         return null;
     }
 
     return (
-        <div className="upload-progress">
-            Завантаження:
-            <progress max={100} value={-1 === progress ? undefined : progress} />
-            {progress !== -1 ? <span>{progress.toFixed(2)}%</span> : undefined}
+        <div className="d-flex align-items-center mb-3">
+            Завантаження:{' '}
+            <progress max={100} value={-1 === progress ? undefined : progress} className="flex-grow-1 ms-1" />{' '}
+            {progress !== -1 ? <span className="ms-1">{progress.toFixed(2)}%</span> : undefined}
         </div>
     );
 }

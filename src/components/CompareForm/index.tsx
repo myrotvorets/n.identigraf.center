@@ -1,157 +1,123 @@
-import { Component, ComponentChild, h } from 'preact';
+import { h } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { route } from 'preact-router';
+import { Alert, Card, Form } from 'react-bootstrap';
 import Bugsnag from '@bugsnag/js';
-import Alert from '../Alert';
-import ReadRequirements from '../ReadRequirements';
-import UploadProgress from '../UploadProgress';
-import UploadSubmitButton from '../UploadSubmitButton';
+import { CardHeader } from '../CardHeader';
+import { Paragraph } from '../Paragraph';
+import { ReadRequirements } from '../ReadRequirements';
+import { UploadProgress } from '../UploadProgress';
+import { UploadSubmitButton } from '../UploadSubmitButton';
+import { type CompareUploadResponse, type ErrorResponse, decodeErrorResponse } from '../../api';
 import { withLoginCheck } from '../../hocs/withLoginCheck';
-import { CompareUploadResponse, ErrorResponse, decodeErrorResponse } from '../../api';
-
-import '../SearchForm/searchform.scss';
+import { useXHR } from '../../hooks/usexhr';
 
 interface Props {
-    user: string | null | undefined;
+    token: string;
 }
 
-interface State {
-    error: string | null;
-    uploadProgress: number | null;
-    hasPhoto1: boolean;
-    hasPhoto2: boolean;
-}
+function CompareForm({ token }: Props): h.JSX.Element {
+    const [error, setError] = useState<string>('');
+    const [data, setData] = useState<FormData | undefined>(undefined);
+    const [hasPhoto1, setHasPhoto1] = useState(false);
+    const [hasPhoto2, setHasPhoto2] = useState(false);
 
-class CompareForm extends Component<Props, State> {
-    public state: Readonly<State> = {
-        error: null,
-        uploadProgress: null,
-        hasPhoto1: false,
-        hasPhoto2: false,
-    };
+    const {
+        progress: uploadProgress,
+        error: xhrError,
+        response,
+        finished,
+    } = useXHR('https://api2.myrotvorets.center/identigraf/v2/compare', token, data);
 
-    private readonly _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    const onFileChange = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { files, id } = currentTarget;
-        const value = files && files.length > 0;
-        const key = `has${id[0].toUpperCase()}${id.substring(1)}`;
-        this.setState({ [key]: value });
-    };
-
-    private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
-        e.preventDefault();
-        const user = this.props.user!;
-        const data = new FormData(e.currentTarget);
-
-        this.setState({ uploadProgress: 0, error: null });
-        const req = new XMLHttpRequest();
-        req.upload.addEventListener('progress', this._onUploadProgress);
-        req.addEventListener('error', this._onUploadFailed);
-        req.addEventListener('abort', this._onUploadAborted);
-        req.addEventListener('timeout', this._onUploadTimeout);
-        req.addEventListener('load', this._onUploadSucceeded);
-        req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/compare');
-        req.setRequestHeader('Authorization', `Bearer ${user}`);
-        req.send(data);
-    };
-
-    private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
-        let progress: number;
-        if (e.lengthComputable) {
-            progress = (e.loaded / e.total) * 100;
-        } else {
-            progress = -1;
+        const value = files !== null && files.length > 0;
+        if (id === 'photo1') {
+            setHasPhoto1(value);
+        } else if (id === 'photo2') {
+            setHasPhoto2(value);
         }
+    }, []);
 
-        this.setState({
-            uploadProgress: progress,
-        });
-    };
-
-    private readonly _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
-        this._setError('Помилка вивантаження файлу');
-    };
-
-    private readonly _onUploadAborted = (): void => {
-        this._setError('Вивантаження перервано');
-    };
-
-    private readonly _onUploadTimeout = (): void => {
-        this._setError('Час очікування вивантаження вичерпано');
-    };
-
-    private readonly _onUploadSucceeded = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
-        this.setState({ uploadProgress: 100 });
-
-        const req = e.currentTarget as XMLHttpRequest;
-        try {
-            const body = JSON.parse(req.responseText) as CompareUploadResponse | ErrorResponse;
-            if (body.success) {
-                route(`/compare/${body.guid}`);
-            } else if (req.status === 401) {
-                route('/logout');
-            } else {
-                this._setError(decodeErrorResponse(body));
+    const onFormSubmit = useCallback(
+        (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
+            e.preventDefault();
+            if (hasPhoto1 && hasPhoto2 && isNaN(uploadProgress)) {
+                setData(new FormData(e.currentTarget));
             }
-        } catch (err) {
-            Bugsnag.notify(err as Error);
-            this._setError('Несподівана помилка під час аналізу відповіді сервера');
+        },
+        [hasPhoto1, hasPhoto2, uploadProgress],
+    );
+
+    useEffect(() => setError(xhrError ? 'Помилка вивантаження файлу' : ''), [xhrError]);
+
+    useEffect(() => {
+        if (finished) {
+            try {
+                const body = JSON.parse(response!.response) as CompareUploadResponse | ErrorResponse;
+                if (body.success) {
+                    route(`/compare/${body.guid}`);
+                } else if (response!.status === 401) {
+                    route('/logout');
+                } else {
+                    setError(decodeErrorResponse(body));
+                }
+            } catch (err) {
+                Bugsnag.notify(err as Error);
+                setError('Несподівана помилка під час аналізу відповіді сервера');
+            }
         }
-    };
+    }, [finished, response]);
 
-    private _setError(error: string): void {
-        this.setState({ uploadProgress: null, error });
-    }
+    return (
+        <section className="d-flex flex-column w-100">
+            <ReadRequirements />
 
-    public render(): ComponentChild {
-        const { error, hasPhoto1, hasPhoto2, uploadProgress } = this.state;
+            <Card as="form" onSubmit={onFormSubmit}>
+                <CardHeader>Порівняння</CardHeader>
+                <Card.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
 
-        return (
-            <section className="searchform">
-                <ReadRequirements />
+                    <Form.Group controlId="photo1" className="mb-3">
+                        <Form.Label>Світлина, яка порівнюється</Form.Label>
+                        <Form.Control
+                            name="photos"
+                            type="file"
+                            required
+                            accept="image/png, image/jpeg"
+                            disabled={!isNaN(uploadProgress)}
+                            onChange={onFileChange}
+                        />
+                    </Form.Group>
 
-                <form className="block" onSubmit={this._onFormSubmit} encType="multipart/form-data">
-                    <header className="block__header">Порівняння</header>
-
-                    {error && <Alert message={error} />}
-
-                    <label htmlFor="photo1" className="required">
-                        Світлина, яка порівнюється
-                    </label>
-                    <input
-                        type="file"
-                        id="photo1"
-                        name="photos"
-                        onChange={this._onFileChange}
-                        required
-                        accept="image/png, image/jpeg"
-                        disabled={uploadProgress !== null}
-                    />
-
-                    <label htmlFor="photo2" className="required">
-                        Еталонні світлини (до 10 файлів)
-                    </label>
-                    <input
-                        type="file"
-                        multiple
-                        id="photo2"
-                        name="photos"
-                        onChange={this._onFileChange}
-                        required
-                        accept="image/png, image/jpeg"
-                        disabled={uploadProgress !== null}
-                    />
-
-                    <small>Порада: щоб вибрати кілька файлів, утримуйте клавіші Shift або Ctrl при виборі файлів</small>
+                    <Form.Group controlId="photo2" className="mb-3">
+                        <Form.Label>Еталонні світлини (до 10 файлів)</Form.Label>
+                        <Form.Control
+                            name="photos"
+                            type="file"
+                            required
+                            multiple
+                            accept="image/png, image/jpeg"
+                            disabled={!isNaN(uploadProgress)}
+                            onChange={onFileChange}
+                        />
+                        <Form.Text className="text-muted">
+                            Порада: щоб вибрати кілька файлів, утримуйте клавіші Shift або Ctrl при виборі файлів
+                        </Form.Text>
+                    </Form.Group>
 
                     <UploadProgress progress={uploadProgress} />
 
-                    <UploadSubmitButton
-                        disabled={!hasPhoto1 || !hasPhoto2 || uploadProgress !== null}
-                        progress={uploadProgress}
-                    />
-                </form>
-            </section>
-        );
-    }
+                    <Paragraph>
+                        <UploadSubmitButton
+                            disabled={!hasPhoto1 || !hasPhoto2 || !isNaN(uploadProgress)}
+                            progress={uploadProgress}
+                        />
+                    </Paragraph>
+                </Card.Body>
+            </Card>
+        </section>
+    );
 }
 
 export default withLoginCheck(CompareForm);

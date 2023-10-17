@@ -1,0 +1,35 @@
+<svg width="350" height="75" viewBox="0 0 350 75" xmlns="http://www.w3.org/2000/svg">
+    <title>Simple Glow</title>
+    <rect x="0" y="0" width="350" height="75" style="fill: #FFF" />
+    <g style="overflow:hidden; text-anchor: middle; font-size:50; font-family: Arial, sans-serif; font-weight: bold">
+        <defs>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="10 10" result="glow" />
+                <feMerge>
+                    <feMergeNode in="glow" />
+                    <feMergeNode in="glow" />
+                    <feMergeNode in="glow" />
+                    <feMergeNode in="glow" />
+                </feMerge>
+            </filter>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2 2" result="shadow" />
+                <feOffset dx="4" dy="8" />
+            </filter>
+            <filter id="extrusion">
+                <feConvolveMatrix order="8,8" divisor="1"
+                    kernelMatrix="1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 "
+                    in="SourceAlpha" result="BEVEL" />
+                <feOffset dx="1" dy="1" in="BEVEL" result="OFFSET" />
+
+                <feMerge>
+                    <feMergeNode in="OFFSET" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+        </defs>
+        <text style="filter: url(#glow); fill: #F0E68C" x="175" y="55">NEURO</text>
+        <text style="filter: url(#shadow); fill: #FFA500" x="175" y="50">NEURO</text>
+        <text x="175" y="55" style="fill: #FF0000; filter: url(#extrusion)">NEURO</text>
+    </g>
+</svg>

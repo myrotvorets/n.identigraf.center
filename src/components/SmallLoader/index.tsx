@@ -4,17 +4,22 @@ import logo from '../../assets/identigraf-logo.svg';
 import './smallloader.scss';
 
 interface Props {
-    width: number;
+    width?: number;
+    text?: string;
+    justifyContent?: string;
+    alignItems?: string;
 }
 
-export default function SmallLoader({ width }: Props): h.JSX.Element {
+export function SmallLoader({
+    text,
+    width = 100,
+    justifyContent = 'center',
+    alignItems = 'center',
+}: Props): h.JSX.Element {
     return (
-        <div className="SmallLoader">
-            <img src={logo as string} alt="Зачекайте…" width={width} />
+        <div className={`d-flex justify-content-${justifyContent} align-items-${alignItems}`}>
+            <img src={logo} alt={text ? '' : 'Зачекайте…'} width={width} className="SmallLoader" />
+            {text && <span className="px-2">{text}</span>}
         </div>
     );
 }
-
-SmallLoader.defaultProps = {
-    width: 100,
-};
