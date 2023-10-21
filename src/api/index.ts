@@ -139,9 +139,14 @@ export default class API {
     }
 
     private static fetch<R>(endpoint: string, init: RequestInit): Promise<R | ErrorResponse> {
+        let r: Response | undefined;
         return fetch(endpoint, init)
-            .then((response) => response.json() as Promise<R>)
+            .then((response) => {
+                r = response;
+                return response.json() as Promise<R>;
+            })
             .catch((e: Error) => {
+                e.message += ` (${init.method ?? 'GET'} ${endpoint}) => ${r?.status ?? 'unknown'}}`;
                 Bugsnag.notify(e);
                 return {
                     success: false,
