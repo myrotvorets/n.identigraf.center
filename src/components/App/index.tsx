@@ -24,6 +24,12 @@ import API, { type ErrorResponse, type GeoResponse } from '../../api';
 import { AppContext, type ApplicationContext } from '../../context';
 import './app.scss';
 
+declare global {
+    interface Window {
+        _paq: unknown[];
+    }
+}
+
 export default function App(): h.JSX.Element {
     const [isRussia, setIsRussia] = useState(false);
     const [user, setUser] = useState<string | null | undefined>(undefined);
@@ -65,11 +71,24 @@ export default function App(): h.JSX.Element {
             setUser(null);
         }
 
-        void checkCountry();
-        void checkToken();
+        void Promise.all([checkCountry(), checkToken()]);
     }, []);
 
-    const onRouteChange = useCallback((e: RouterOnChangeArgs): unknown => setUrl(e.url), []);
+    const onRouteChange = useCallback((e: RouterOnChangeArgs): void => {
+        setUrl(e.url);
+
+        try {
+            self._paq.push(['setCustomUrl', e.url]);
+            if (e.previous) {
+                self._paq.push(['setReferrerUrl', e.previous]);
+            }
+
+            self._paq.push(['trackPageView']);
+            self._paq.push(['enableLinkTracking']);
+        } catch {
+            // Something is broken, swallow the error
+        }
+    }, []);
 
     return (
         <AppContext.Provider value={ctx}>
