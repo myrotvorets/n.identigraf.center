@@ -3,14 +3,40 @@
     "name": "IDentigraF",
     "icons": [
       {
+        "src": "@ref(./maskable128.png)",
+        "type": "image/png",
+        "sizes": "128x128",
+        "purpose": "maskable"
+      },
+      {
         "src": "@ref(./icon192.png)",
         "type": "image/png",
-        "sizes": "192x192"
+        "sizes": "192x192",
+        "purpose": "any"
+      },
+      {
+        "src": "@ref(./maskable192.png)",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose": "maskable"
+      },
+      {
+        "src": "@ref(./maskable384.png)",
+        "type": "image/png",
+        "sizes": "384x384",
+        "purpose": "maskable"
       },
       {
         "src": "@ref(./icon512.png)",
         "type": "image/png",
-        "sizes": "512x512"
+        "sizes": "512x512",
+        "purpose": "any"
+      },
+      {
+        "src": "@ref(./maskable512.png)",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "maskable"
       }
     ],
     "start_url": "/",
