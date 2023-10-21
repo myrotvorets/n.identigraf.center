@@ -6,7 +6,7 @@ interface Props {
     results: Record<string, number>;
 }
 
-export function Results({ guid, results }: Props): h.JSX.Element {
+export function Results({ guid, results }: Readonly<Props>): h.JSX.Element {
     const similarities = Object.values(results);
 
     return (

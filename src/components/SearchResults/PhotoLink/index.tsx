@@ -8,7 +8,7 @@ interface Props {
     onClick: (link: string) => unknown;
 }
 
-export function PhotoLink({ link, text, onClick }: Props): h.JSX.Element | null {
+export function PhotoLink({ link, text, onClick }: Readonly<Props>): h.JSX.Element | null {
     const onLinkClicked = useCallback(
         (e: h.JSX.TargetedMouseEvent<HTMLAnchorElement>): void => {
             e.preventDefault();

@@ -8,7 +8,7 @@ interface Props {
     capturedFaces: RecognizedFace[];
 }
 
-export function Results({ capturedFaces, guid }: Props): h.JSX.Element {
+export function Results({ capturedFaces, guid }: Readonly<Props>): h.JSX.Element {
     return (
         <Card className="w-100">
             <Card.Header as="header" className="text-bg-primary">

@@ -4,7 +4,7 @@ interface Props {
     progress: number;
 }
 
-export function UploadProgress({ progress }: Props): h.JSX.Element | null {
+export function UploadProgress({ progress }: Readonly<Props>): h.JSX.Element | null {
     if (isNaN(progress)) {
         return null;
     }

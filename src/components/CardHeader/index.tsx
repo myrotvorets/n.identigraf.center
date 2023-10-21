@@ -5,7 +5,7 @@ interface Props extends h.JSX.HTMLAttributes<HTMLElement> {
     children: ComponentChildren;
 }
 
-export function CardHeader({ children, className, ...attrs }: Props): h.JSX.Element {
+export function CardHeader({ children, className, ...attrs }: Readonly<Props>): h.JSX.Element {
     className = typeof className !== 'object' ? `text-bg-primary ${className ?? ''}` : className;
     return (
         <Card.Header as="header" className={className} {...attrs}>

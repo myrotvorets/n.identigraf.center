@@ -5,7 +5,7 @@ import { CapturedFace as RecognizedFace } from '../../../../api';
 
 type Props = RecognizedFace;
 
-export function Face({ minSimilarity, maxSimilarity, face }: Props): h.JSX.Element {
+export function Face({ minSimilarity, maxSimilarity, face }: Readonly<Props>): h.JSX.Element {
     return (
         <div className="d-flex flex-column position-sticky bg-white" style={{ top: '2rem' }}>
             <h4 className="d-sm-none">Розпізнане обличчя</h4>

@@ -16,7 +16,7 @@ interface Props {
     token: string;
 }
 
-export function SearchFormInternal({ token }: Props): h.JSX.Element {
+export function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     const [image, setImage] = useState('');
     const [error, setError] = useState<string>('');
     const [minSimilarity, setMinSimilarity] = useState<number>(30);

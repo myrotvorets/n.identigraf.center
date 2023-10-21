@@ -37,7 +37,7 @@ interface Props {
     setToken: ApplicationContext['setUser'];
 }
 
-export function Login({ setToken }: Props): h.JSX.Element | null {
+export function Login({ setToken }: Readonly<Props>): h.JSX.Element | null {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [error, setError] = useState('');

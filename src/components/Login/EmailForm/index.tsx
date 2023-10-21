@@ -12,7 +12,7 @@ interface Props {
     onSubmit: (email: string) => unknown;
 }
 
-export function EmailForm({ email: propsEmail, error, onSubmit, state }: Props): h.JSX.Element {
+export function EmailForm({ email: propsEmail, error, onSubmit, state }: Readonly<Props>): h.JSX.Element {
     const [email, setEmail] = useState(propsEmail);
     const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined);
     const ref = useRef<HTMLInputElement>(null);

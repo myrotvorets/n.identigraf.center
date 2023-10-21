@@ -17,7 +17,7 @@ export function Face({
     onClick,
     primaryPhoto,
     similarity,
-}: Props): h.JSX.Element {
+}: Readonly<Props>): h.JSX.Element {
     return (
         <ListGroup.Item>
             <Row>

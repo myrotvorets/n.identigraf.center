@@ -15,7 +15,7 @@ interface Props {
     guid: string;
 }
 
-export function MatchedFaces({ faceID, guid }: Props): h.JSX.Element {
+export function MatchedFaces({ faceID, guid }: Readonly<Props>): h.JSX.Element {
     const [matchedFaces, setMatchedFaces] = useState<FoundFace[]>([]);
     const [error, setError] = useState('');
     const [done, setDone] = useState(false);

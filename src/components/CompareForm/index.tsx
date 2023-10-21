@@ -16,7 +16,7 @@ interface Props {
     token: string;
 }
 
-function CompareForm({ token }: Props): h.JSX.Element {
+function CompareForm({ token }: Readonly<Props>): h.JSX.Element {
     const [error, setError] = useState<string>('');
     const [data, setData] = useState<FormData | undefined>(undefined);
     const [hasPhoto1, setHasPhoto1] = useState(false);

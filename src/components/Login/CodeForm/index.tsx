@@ -17,7 +17,7 @@ interface Props {
 
 const isCodeValid = (code: string): boolean => /^\d{6}$/u.test(code);
 
-export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: Props): h.JSX.Element {
+export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: Readonly<Props>): h.JSX.Element {
     const [code, setCode] = useState('');
     const [codeValid, setCodeValid] = useState<boolean | undefined>(undefined);
     const ref = useRef<HTMLInputElement>(null);

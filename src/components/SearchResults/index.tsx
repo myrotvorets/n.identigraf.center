@@ -11,7 +11,7 @@ interface Props {
     guid: string;
 }
 
-export default function SearchResults({ guid }: Props): h.JSX.Element {
+export default function SearchResults({ guid }: Readonly<Props>): h.JSX.Element {
     const [error, setError] = useState('');
     const [checkInterval, setCheckInterval] = useState<number>(0);
     const [trigger, setTrigger] = useState(0);

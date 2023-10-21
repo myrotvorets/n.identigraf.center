@@ -15,7 +15,7 @@ export function SmallLoader({
     width = 100,
     justifyContent = 'center',
     alignItems = 'center',
-}: Props): h.JSX.Element {
+}: Readonly<Props>): h.JSX.Element {
     return (
         <div className={`d-flex justify-content-${justifyContent} align-items-${alignItems}`}>
             <img src={logo} alt={text ? '' : 'Зачекайте…'} width={width} className="SmallLoader" />

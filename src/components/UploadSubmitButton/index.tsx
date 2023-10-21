@@ -21,7 +21,7 @@ function progressToText(progress: number): string {
     }
 }
 
-export function UploadSubmitButton({ progress }: Props): h.JSX.Element {
+export function UploadSubmitButton({ progress }: Readonly<Props>): h.JSX.Element {
     return (
         <Button type="submit" variant="primary">
             {progressToText(progress)}

@@ -10,7 +10,7 @@ interface Props {
     index: number;
 }
 
-export function CapturedFace({ face, guid, index }: Props): h.JSX.Element {
+export function CapturedFace({ face, guid, index }: Readonly<Props>): h.JSX.Element {
     return (
         <ListGroup.Item>
             <Row>

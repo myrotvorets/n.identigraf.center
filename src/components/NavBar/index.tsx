@@ -7,7 +7,7 @@ interface Props {
     url: string;
 }
 
-export function NavBar({ url }: Props): h.JSX.Element {
+export function NavBar({ url }: Readonly<Props>): h.JSX.Element {
     const { user } = useContext(AppContext)!;
     return (
         <Navbar expand="md" variant="dark">

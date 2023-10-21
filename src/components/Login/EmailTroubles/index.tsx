@@ -8,7 +8,7 @@ interface Props {
     onRetryClicked: () => unknown;
 }
 
-export function EmailTroubles({ onBackClicked, onRetryClicked }: Props): h.JSX.Element {
+export function EmailTroubles({ onBackClicked, onRetryClicked }: Readonly<Props>): h.JSX.Element {
     return (
         <Card>
             <CardHeader>Проблеми з отриманням електронних листів?</CardHeader>
