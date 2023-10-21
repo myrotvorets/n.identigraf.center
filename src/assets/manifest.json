@@ -1,6 +1,8 @@
 {
     "short_name": "IDentigraF",
     "name": "IDentigraF",
+    "id": "neuroidentigraf",
+    "categories": ["security"],
     "icons": [
       {
         "src": "@ref(./maskable128.png)",
@@ -43,5 +45,19 @@
     "background_color": "#000100",
     "display": "standalone",
     "scope": "/",
-    "theme_color": "#000100"
+    "theme_color": "#000100",
+    "screenshots": [
+      {
+        "src": "@ref(./screenshot-1024x768.jpg)",
+        "sizes": "1024x768",
+        "form_factor": "wide",
+        "label": "Sample search results"
+      },
+      {
+        "src": "@ref(./screenshot-768x1024.jpg)",
+        "sizes": "768x1024",
+        "form_factor": "narrow",
+        "label": "Sample search results"
+      }
+    ]
 }
