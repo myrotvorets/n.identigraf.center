@@ -69,12 +69,12 @@ export function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     useEffect(() => setError(xhrError ? 'Помилка вивантаження файлу' : ''), [xhrError]);
 
     useEffect(() => {
-        if (finished) {
+        if (finished && response) {
             try {
-                const body = JSON.parse(response!.response) as SearchUploadResponse | ErrorResponse;
+                const body = JSON.parse(response.response) as SearchUploadResponse | ErrorResponse;
                 if (body.success) {
                     route(`/search/${body.guid}`);
-                } else if (response!.status === 401) {
+                } else if (response.status === 401) {
                     route('/logout');
                 } else {
                     setError(decodeErrorResponse(body));

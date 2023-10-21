@@ -58,8 +58,8 @@ export function productionConfiguration(): Configuration {
             }),
             new InjectManifest({
                 swSrc: './src/sw.ts',
-                include: ['index.html', /\.js$/u, /\.svg$/u, /\.css$/u],
-                dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(js|css)/u,
+                include: ['index.html', /\.mjs$/u, /\.svg$/u, /\.css$/u],
+                dontCacheBustURLsMatching: /\.[0-9a-f]{5}\.min\.(mjs|css)/u,
             }),
         ],
         optimization: {
