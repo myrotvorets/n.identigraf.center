@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useContext } from 'preact/compat';
+import { useContext } from 'preact/hooks';
 import { Button, Card } from 'react-bootstrap';
 import { CardHeader } from '../CardHeader';
 import { Paragraph } from '../Paragraph';

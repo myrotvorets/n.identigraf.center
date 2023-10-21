@@ -1,5 +1,5 @@
 import { Fragment, h } from 'preact';
-import { useEffect, useMemo, useState } from 'preact/compat';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { Route, Router, RouterOnChangeArgs, getCurrentUrl } from 'preact-router';
 import { Header } from '../Header';
 import { NavBar } from '../NavBar';
@@ -31,8 +31,7 @@ export default function App(): h.JSX.Element {
     let isFrame = false;
 
     if (typeof window !== 'undefined') {
-        const url = new URL(self.location.href);
-        isFrame = url.searchParams.has('iframe');
+        isFrame = new URL(self.location.href).searchParams.has('iframe');
     }
 
     const ctx: ApplicationContext = useMemo(() => {
@@ -70,7 +69,7 @@ export default function App(): h.JSX.Element {
         void checkToken();
     }, []);
 
-    const onRouteChange = (e: RouterOnChangeArgs): unknown => setUrl(e.url);
+    const onRouteChange = useCallback((e: RouterOnChangeArgs): unknown => setUrl(e.url), []);
 
     return (
         <AppContext.Provider value={ctx}>

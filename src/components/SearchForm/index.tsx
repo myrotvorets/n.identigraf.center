@@ -1,6 +1,6 @@
 import { h } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { route } from 'preact-router';
-import { useCallback, useEffect, useState } from 'preact/compat';
 import { Alert, Card, Form, Image, InputGroup } from 'react-bootstrap';
 import Bugsnag from '@bugsnag/js';
 import { CardHeader } from '../CardHeader';
