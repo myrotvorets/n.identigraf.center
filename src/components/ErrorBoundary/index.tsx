@@ -1,6 +1,7 @@
 import { Component, ComponentChild, h } from 'preact';
-import '../Alert/alert.scss';
 import Bugsnag from '@bugsnag/js';
+import { Card } from 'react-bootstrap';
+import { Paragraph } from '../Paragraph';
 
 interface Props {
     error?: Error;
@@ -27,7 +28,6 @@ export default class ErrorBoundary extends Component<Props, State> {
         return { error };
     }
 
-    // eslint-disable-next-line class-methods-use-this
     public componentDidCatch(error: Error): void {
         Bugsnag.notify(error);
     }
@@ -36,33 +36,32 @@ export default class ErrorBoundary extends Component<Props, State> {
         const { error } = this.state;
         if (error) {
             return (
-                <main>
-                    <div className="alert">
-                        <p>
-                            Програма закривається.
-                            <br />
-                            Закрий все, над чим ти працював:
-                            <br />
-                            Ти запросив занадто багато.
-                        </p>
-                        <hr />
-                        <p>
-                            А насправді сталася несподівана помилка{' '}
-                            <span role="img" aria-label="Плачучий настрій">
-                                😭😭😭
-                            </span>
-                        </p>
-                        <p>
-                            Наша команда вже повідомлена про цей інцидент. Ми докладаємо всіх зусиль, щоб виправити цю
-                            проблему.
-                        </p>
-                        <hr />
-                        <details>
-                            <summary>Технічні деталі</summary>
-                            <strong>{error.name}</strong>
-                            <p>{error.message}</p>
-                        </details>
-                    </div>
+                <main className="container d-flex flex-grow-1 align-items-center justify-content-center p-4">
+                    <Card className="text-bg-danger">
+                        <Card.Body>
+                            <Paragraph>
+                                <strong>
+                                    Програма закривається.
+                                    <br />
+                                    Закрий все, над чим ти працював:
+                                    <br />
+                                    Ти запросив занадто багато.
+                                </strong>
+                            </Paragraph>
+                            <hr />
+                            <Paragraph>А насправді сталася несподівана помилка 😭😭😭</Paragraph>
+                            <Paragraph>
+                                Наша команда вже повідомлена про цей інцидент. Ми докладаємо всіх зусиль, щоб виправити
+                                цю проблему.
+                            </Paragraph>
+                            <hr />
+                            <details>
+                                <summary>Технічні деталі</summary>
+                                <strong>{error.name}</strong>
+                                <Paragraph>{error.message}</Paragraph>
+                            </details>
+                        </Card.Body>
+                    </Card>
                 </main>
             );
         }

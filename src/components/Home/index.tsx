@@ -1,47 +1,35 @@
 import { h } from 'preact';
-import { Link } from 'preact-router';
-import { connect } from 'unistore/preact';
-import { AppState } from '../../redux/store';
+import { useContext } from 'preact/hooks';
+import { Button, Card } from 'react-bootstrap';
+import { CardHeader } from '../CardHeader';
+import { Paragraph } from '../Paragraph';
+import { SmallLoader } from '../SmallLoader';
+import { AppContext } from '../../context';
 
-import './home.scss';
-
-type OwnProps = unknown;
-interface MappedProps {
-    loggedIn: boolean | null;
-}
-
-type Props = OwnProps & MappedProps;
-
-function Home({ loggedIn }: Props): h.JSX.Element {
+export default function Home(): h.JSX.Element {
+    const { user } = useContext(AppContext)!;
     return (
-        <section className="Home">
-            <div className="block">
-                <header className="block__header">IDentigraF</header>
-
-                <p>
+        <Card className="w-100">
+            <CardHeader>IDentigraF</CardHeader>
+            <Card.Body>
+                <Paragraph>
                     Працювати з Системою можуть громадяни, які знаходяться на території вільної України і користуються
                     мобільним зв’язком українських операторів.
-                </p>
+                </Paragraph>
 
-                <p>
+                <Paragraph>
                     Кожен пересічний користувач має можливість здійснити лише 5 (п’ять) спроб розпізнавання на добу за
                     допомогою одного мобільного пристрою.
-                </p>
+                </Paragraph>
 
-                {loggedIn === null ? (
-                    <button disabled>Триває перевірка…</button>
+                {user === undefined ? (
+                    <SmallLoader text="Триває перевірка…" />
                 ) : (
-                    <Link href={loggedIn ? '/search' : '/login'}>Почати</Link>
+                    <Button href={user !== null ? '/search' : '/login'} className="d-block" size="lg">
+                        Почати
+                    </Button>
                 )}
-            </div>
-        </section>
+            </Card.Body>
+        </Card>
     );
 }
-
-function mapStateToProps(state: AppState): MappedProps {
-    return {
-        loggedIn: !!state.user,
-    };
-}
-
-export default connect<OwnProps, unknown, AppState, MappedProps>(mapStateToProps)(Home);

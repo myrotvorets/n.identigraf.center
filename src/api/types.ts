@@ -89,3 +89,11 @@ export interface MatchedFacesResponse {
     success: true;
     matches: MatchedFace[];
 }
+
+export interface GeoResponse {
+    success: true;
+    response: {
+        cc: string | null;
+        country: string | null;
+    };
+}

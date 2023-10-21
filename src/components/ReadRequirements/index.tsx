@@ -1,11 +1,12 @@
 import { h } from 'preact';
 import { Link } from 'preact-router';
-import Alert from '../Alert';
+import { Alert } from 'react-bootstrap';
 
-export default function ReadRequirements(): h.JSX.Element {
+export function ReadRequirements(): h.JSX.Element {
     return (
-        <Alert className="info">
-            <strong>Уважно</strong> прочитайте <Link href="/requirements">Вимоги до підготовки фотоматеріалів</Link>.
+        <Alert variant="info">
+            <strong>Уважно</strong> прочитайте{' '}
+            <Link href="/about/requirements">Вимоги до підготовки фотоматеріалів</Link>.
         </Alert>
     );
 }

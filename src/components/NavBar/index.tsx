@@ -1,73 +1,65 @@
-import { h } from 'preact';
-import { Link } from 'preact-router';
-import { connect } from 'unistore/preact';
-import { AppState } from '../../redux/store';
-import MenuBar from './MenuBar';
-import MenuItem from './MenuItem';
-import Submenu from './Submenu';
+import { Fragment, h } from 'preact';
+import { useContext } from 'preact/hooks';
+import { Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import { AppContext } from '../../context';
 
-import './navbar.scss';
-
-type OwnProps = unknown;
-interface MappedProps {
-    loggedIn: boolean;
+interface Props {
+    url: string;
 }
 
-type Props = OwnProps & MappedProps;
-
-function NavBar({ loggedIn }: Props): h.JSX.Element {
+export function NavBar({ url }: Readonly<Props>): h.JSX.Element {
+    const { user } = useContext(AppContext)!;
     return (
-        <MenuBar>
-            {!loggedIn && (
-                <MenuItem>
-                    <Link href="/">Головна</Link>
-                </MenuItem>
-            )}
-            {loggedIn && (
-                <MenuItem>
-                    <Link href="/search">Пошук</Link>
-                </MenuItem>
-            )}
-            {loggedIn && (
-                <MenuItem>
-                    <Link href="/compare">Порівняння</Link>
-                </MenuItem>
-            )}
-            <Submenu title="Про сайт">
-                <MenuItem>
-                    <a href="https://identigraf.center/terms-of-service/">Правила користування</a>
-                </MenuItem>
-                <MenuItem>
-                    <Link href="/requirements">Вимоги до фото для розпізнавання</Link>
-                </MenuItem>
-                <MenuItem>
-                    <Link href="/guide">Оцінка результатів розпізнавання</Link>
-                </MenuItem>
-                <MenuItem>
-                    <a href="https://identigraf.center/identigraf-dlya-chajnikiv/">IDentigraF для чайників</a>
-                </MenuItem>
-                <MenuItem>
-                    <a href="https://identigraf.center/pro-identigraf/" target="_blank" rel="noopener noreferrer">
-                        Сторінка Головного Каратєля
-                    </a>
-                </MenuItem>
-            </Submenu>
-            <MenuItem>
-                <Link href="/contacts">Контакти</Link>
-            </MenuItem>
-            {loggedIn && (
-                <MenuItem>
-                    <Link href="/logout">Вийти</Link>
-                </MenuItem>
-            )}
-        </MenuBar>
+        <Navbar expand="md" variant="dark">
+            <Navbar.Toggle aria-controls="navbar-nav" />
+            <Navbar.Collapse id="navbar-nav">
+                <Nav activeKey={url}>
+                    {typeof user !== 'string' && (
+                        <Nav.Item>
+                            <Nav.Link href="/">Головна</Nav.Link>
+                        </Nav.Item>
+                    )}
+                    {typeof user === 'string' && (
+                        <Fragment>
+                            <Nav.Item>
+                                <Nav.Link href="/search">Пошук</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link href="/compare">Порівняння</Nav.Link>
+                            </Nav.Item>
+                        </Fragment>
+                    )}
+                    <NavDropdown title="Про сайт" menuVariant="dark" active={url.startsWith('/about/')}>
+                        <NavDropdown.Item href="https://identigraf.center/terms-of-service/">
+                            Правила користування
+                        </NavDropdown.Item>
+                        <NavDropdown.Item href="/about/requirements" eventKey="/about/requirements">
+                            Вимоги до фото для розпізнавання
+                        </NavDropdown.Item>
+                        <NavDropdown.Item href="/about/guide" eventKey="/about/guide">
+                            Оцінка результатів розпізнавання
+                        </NavDropdown.Item>
+                        <NavDropdown.Item href="https://identigraf.center/identigraf-dlya-chajnikiv/">
+                            IDentigraF для чайників
+                        </NavDropdown.Item>
+                        <NavDropdown.Item
+                            href="https://identigraf.center/pro-identigraf/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Сторінка Головного Каратєля
+                        </NavDropdown.Item>
+                    </NavDropdown>
+                    <Nav.Item>
+                        <Nav.Link href="/contacts">Контакти</Nav.Link>
+                    </Nav.Item>
+                    {typeof user === 'string' && (
+                        <Nav.Item>
+                            <Nav.Link href="/logout">Вийти</Nav.Link>
+                        </Nav.Item>
+                    )}
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
     );
 }
-
-function mapStateToProps(state: AppState): MappedProps {
-    return {
-        loggedIn: !!state.user,
-    };
-}
-
-export default connect<OwnProps, unknown, AppState, MappedProps>(mapStateToProps)(NavBar);

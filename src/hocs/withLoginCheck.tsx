@@ -1,67 +1,45 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import { ComponentConstructor, ComponentType, h } from 'preact';
-import { connect } from 'unistore/preact';
+import { type ComponentType, h } from 'preact';
+import { useContext } from 'preact/hooks';
 import { route } from 'preact-router';
-import type { AppState } from '../redux/store';
-import Loader from '../components/Loader';
+import { Loader } from '../components/Loader';
+import { AppContext } from '../context';
 
-type UserState = 'unknown' | 'visitor' | 'user';
-
-interface MappedProps {
-    state: UserState;
-    user: string | null | undefined;
+interface Token {
+    token: string;
 }
 
-function mapStateToProps({ user }: AppState): MappedProps {
-    let s: UserState;
-    if (user === undefined) {
-        s = 'unknown';
-    } else if (user === null) {
-        s = 'visitor';
-    } else {
-        s = 'user';
-    }
+export const withLoginCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P & Token> =>
+    function Wrapped({ ...props }: P): h.JSX.Element | null {
+        const { user } = useContext(AppContext)!;
+        switch (true) {
+            case user === undefined:
+                return <Loader />;
 
-    return {
-        state: s,
-        user,
+            case typeof user === 'string':
+                return <WrappedComponent {...props} token={user} />;
+
+            default:
+                route('/');
+                return null;
+        }
     };
+
+interface SetToken {
+    setToken: (token: string) => void;
 }
 
-export const withLoginCheck = <P extends object>(
-    WrappedComponent: ComponentType<P>,
-): ComponentConstructor<P, unknown> =>
-    connect<P, unknown, AppState, MappedProps>(mapStateToProps)(
-        ({ state, ...props }: P & MappedProps): h.JSX.Element | null => {
-            switch (state) {
-                case 'unknown':
-                    return <Loader />;
+export const withVisitorCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P & SetToken> =>
+    function Wrapped({ ...props }: P): h.JSX.Element | null {
+        const { user, setUser } = useContext(AppContext)!;
+        switch (true) {
+            case user === undefined:
+                return <Loader />;
 
-                case 'user':
-                    return <WrappedComponent {...(props as P)} />;
+            case user === null:
+                return <WrappedComponent {...props} setToken={setUser} />;
 
-                default:
-                    route('/');
-                    return null;
-            }
-        },
-    );
-
-export const withVisitorCheck = <P extends object>(
-    WrappedComponent: ComponentType<P>,
-): ComponentConstructor<P, unknown> =>
-    connect<P, unknown, AppState, MappedProps>(mapStateToProps)(
-        ({ state, ...props }: P & MappedProps): h.JSX.Element | null => {
-            switch (state) {
-                case 'unknown':
-                    return <Loader />;
-
-                case 'visitor':
-                    return <WrappedComponent {...(props as P)} />;
-
-                default:
-                    route('/search');
-                    return null;
-            }
-        },
-    );
+            default:
+                route('/search');
+                return null;
+        }
+    };

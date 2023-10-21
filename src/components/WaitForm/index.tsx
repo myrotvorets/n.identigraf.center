@@ -1,17 +1,17 @@
 import { h } from 'preact';
+import { Card } from 'react-bootstrap';
+import { CardHeader } from '../CardHeader';
+import { Paragraph } from '../Paragraph';
+import { SmallLoader } from '../SmallLoader';
 
-import './waitform.scss';
-
-export default function WaitForm(): h.JSX.Element {
+export function WaitForm(): h.JSX.Element {
     return (
-        <section className="WaitForm">
-            <div className="block">
-                <header className="block__header">Обробка запиту</header>
-                <p>Зачекайте, будь ласка…</p>
-                <p>
-                    <progress max="100" />
-                </p>
-            </div>
-        </section>
+        <Card className="w-100">
+            <CardHeader>Обробка запиту</CardHeader>
+            <Card.Body>
+                <Paragraph>Зачекайте, будь ласка…</Paragraph>
+                <SmallLoader width={200} />
+            </Card.Body>
+        </Card>
     );
 }

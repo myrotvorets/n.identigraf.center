@@ -1,20 +1,30 @@
 import { h } from 'preact';
+import { Button } from 'react-bootstrap';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 interface Props extends h.JSX.HTMLAttributes {
-    progress: number | null;
+    progress: number;
 }
 
-export default function UploadSubmitButton({ progress, disabled }: Props): h.JSX.Element {
+function progressToText(progress: number): string {
+    switch (true) {
+        case isNaN(progress):
+            return 'Відправити';
+
+        case progress === 100:
+            return 'Обробка…';
+
+        case progress > 0:
+            return `Вивантаження (${Math.floor(progress)}%)…`;
+
+        default:
+            return 'Вивантаження…';
+    }
+}
+
+export function UploadSubmitButton({ progress }: Readonly<Props>): h.JSX.Element {
     return (
-        <button type="submit" disabled={disabled}>
-            {progress !== null
-                ? progress === 100
-                    ? 'Обробка…'
-                    : progress > 0
-                    ? `Вивантаження (${Math.floor(progress)}%)…`
-                    : 'Вивантаження…'
-                : 'Відправити'}
-        </button>
+        <Button type="submit" variant="primary">
+            {progressToText(progress)}
+        </Button>
     );
 }

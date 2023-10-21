@@ -1,178 +1,144 @@
-import { Component, ComponentChild, h } from 'preact';
+import { h } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { route } from 'preact-router';
+import { Alert, Card, Form, Image, InputGroup } from 'react-bootstrap';
 import Bugsnag from '@bugsnag/js';
-import { TargetedEvent } from 'preact/compat';
-import Alert from '../Alert';
-import ReadRequirements from '../ReadRequirements';
-import UploadProgress from '../UploadProgress';
-import UploadSubmitButton from '../UploadSubmitButton';
+import { CardHeader } from '../CardHeader';
+import { ReadRequirements } from '../ReadRequirements';
+import { UploadProgress } from '../UploadProgress';
+import { UploadSubmitButton } from '../UploadSubmitButton';
+import { type ErrorResponse, type SearchUploadResponse, decodeErrorResponse } from '../../api';
+import { useXHR } from '../../hooks/usexhr';
 import { withLoginCheck } from '../../hocs/withLoginCheck';
-import { ErrorResponse, SearchUploadResponse, decodeErrorResponse } from '../../api';
-
-import './searchform.scss';
+import { Paragraph } from '../Paragraph';
 
 interface Props {
-    user: string | null | undefined;
+    token: string;
 }
 
-interface State {
-    image: string;
-    uploadProgress: number | null;
-    error: string | null;
-    minSimilarity: number;
-}
+export function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
+    const [image, setImage] = useState('');
+    const [error, setError] = useState<string>('');
+    const [minSimilarity, setMinSimilarity] = useState<number>(30);
+    const [data, setData] = useState<FormData | undefined>(undefined);
 
-class SearchForm extends Component<Props, State> {
-    public state: Readonly<State> = {
-        image: '',
-        uploadProgress: null,
-        error: null,
-        minSimilarity: 30,
-    };
+    const {
+        progress: uploadProgress,
+        error: xhrError,
+        response,
+        finished,
+    } = useXHR('https://api2.myrotvorets.center/identigraf/v2/search', token, data);
 
-    private readonly _onFileChange = ({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
-        this.setState({ error: null });
+    const onFileChange = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+        setError('');
         const { files } = currentTarget;
         const f = files?.[0];
         if (f?.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.addEventListener('load', ({ target }: ProgressEvent<FileReader>): void => {
-                this.setState({ image: target!.result as string });
+                setImage(target!.result as string);
             });
 
             reader.readAsDataURL(f);
         } else {
-            this.setState({ image: '' });
+            setImage('');
         }
-    };
+    }, []);
 
-    private readonly _onFormSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
-        e.preventDefault();
-        const user = this.props.user;
-        const data = new FormData(e.currentTarget);
-
-        this.setState({ uploadProgress: 0, error: null });
-        const req = new XMLHttpRequest();
-        req.upload.addEventListener('progress', this._onUploadProgress);
-        req.addEventListener('error', this._onUploadFailed);
-        req.addEventListener('abort', this._onUploadAborted);
-        req.addEventListener('timeout', this._onUploadTimeout);
-        req.addEventListener('load', this._onUploadSucceeded);
-        req.open('POST', 'https://api2.myrotvorets.center/identigraf/v2/search');
-        req.setRequestHeader('Authorization', `Bearer ${user}`);
-        req.send(data);
-    };
-
-    private readonly _onSimilarityChange = ({ currentTarget }: TargetedEvent<HTMLInputElement>): void => {
-        let value = currentTarget.valueAsNumber;
+    const onSimilarityChange = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+        const value = currentTarget.valueAsNumber;
         if (value < 5) {
-            value = 5;
+            setMinSimilarity(5);
+        } else if (value > 80) {
+            setMinSimilarity(80);
+        } else {
+            setMinSimilarity(value);
         }
+    }, []);
 
-        if (value > 80) {
-            value = 80;
-        }
-
-        this.setState({ minSimilarity: value });
-    };
-
-    private readonly _onUploadProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
-        const progress = e.lengthComputable ? (e.loaded / e.total) * 100 : -1;
-        this.setState({ uploadProgress: progress });
-    };
-
-    private readonly _onUploadFailed = (/* e: ProgressEvent<XMLHttpRequestEventTarget> */): void => {
-        this._setError('Помилка вивантаження файлу');
-    };
-
-    private readonly _onUploadTimeout = (): void => {
-        this._setError('Час очікування вивантаження вичерпано');
-    };
-
-    private readonly _onUploadAborted = (): void => {
-        this._setError('Вивантаження перервано');
-    };
-
-    private readonly _onUploadSucceeded = (e: ProgressEvent<XMLHttpRequestEventTarget>): void => {
-        this.setState({ uploadProgress: 100 });
-        const req = e.currentTarget as XMLHttpRequest;
-        try {
-            const body = JSON.parse(req.responseText) as SearchUploadResponse | ErrorResponse;
-            if (body.success) {
-                route(`/search/${body.guid}`);
-            } else if (req.status === 401) {
-                route('/logout');
-            } else {
-                this._setError(decodeErrorResponse(body));
+    const onFormSubmit = useCallback(
+        (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
+            e.preventDefault();
+            if (image.length !== 0 && isNaN(uploadProgress)) {
+                setData(new FormData(e.currentTarget));
             }
-        } catch (err) {
-            Bugsnag.notify(err as Error);
-            this._setError('Несподівана помилка під час аналізу відповіді сервера');
+        },
+        [image, uploadProgress],
+    );
+
+    useEffect(() => setError(xhrError ? 'Помилка вивантаження файлу' : ''), [xhrError]);
+
+    useEffect(() => {
+        if (finished) {
+            try {
+                const body = JSON.parse(response!.response) as SearchUploadResponse | ErrorResponse;
+                if (body.success) {
+                    route(`/search/${body.guid}`);
+                } else if (response!.status === 401) {
+                    route('/logout');
+                } else {
+                    setError(decodeErrorResponse(body));
+                }
+            } catch (err) {
+                Bugsnag.notify(err as Error);
+                setError('Несподівана помилка під час аналізу відповіді сервера');
+            }
         }
-    };
+    }, [finished, response]);
 
-    private _setError(error: string): void {
-        this.setState({ uploadProgress: null, error });
-    }
+    return (
+        <section className="d-flex flex-column w-100">
+            <ReadRequirements />
 
-    public render(): ComponentChild {
-        const { error, image, minSimilarity, uploadProgress } = this.state;
+            <Card as="form" onSubmit={onFormSubmit}>
+                <CardHeader>Пошук</CardHeader>
+                <Card.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
 
-        return (
-            <section className="searchform">
-                <ReadRequirements />
-
-                <form className="block" onSubmit={this._onFormSubmit}>
-                    <header className="block__header">Пошук</header>
-
-                    {error && <Alert message={error} />}
-
-                    <label for="photo" htmlFor="photo" className="required">
-                        Світлина для розпізнавання
-                    </label>
-                    <input
-                        type="file"
-                        id="photo"
-                        name="photo"
-                        onChange={this._onFileChange}
-                        required
-                        accept="image/png, image/jpeg"
-                        disabled={uploadProgress !== null}
-                    />
-
-                    <label for="minSimilarity" htmlFor="minSimilarity">
-                        Мінімальна схожість:
-                    </label>
-                    <div className="input-group">
-                        <input
-                            type="number"
+                    <Form.Group controlId="photo" className="mb-3">
+                        <Form.Label>Світлина для розпізнавання:</Form.Label>
+                        <Form.Control
+                            type="file"
                             required
-                            value={minSimilarity}
-                            min={5}
-                            max={80}
-                            step={1}
-                            id="minSimilarity"
-                            name="minSimilarity"
-                            onInput={this._onSimilarityChange}
-                            className="form-control"
+                            accept="image/png, image/jpeg"
+                            disabled={!isNaN(uploadProgress)}
+                            onChange={onFileChange}
+                            name="photo"
                         />
-                        <div className="input-group-append">
-                            <span className="input-group-text">%</span>
-                        </div>
-                    </div>
+                    </Form.Group>
 
-                    {image.length > 0 ? <img src={image} alt="Завантажена світлина" className="photo" /> : null}
+                    <Form.Group controlId="minSimilarity" className="mb-3">
+                        <Form.Label>Мінімальна схожість:</Form.Label>
+                        <InputGroup>
+                            <Form.Control
+                                type="number"
+                                value={minSimilarity}
+                                required
+                                name="minSimilarity"
+                                min={5}
+                                max={80}
+                                onInput={onSimilarityChange}
+                            />
+                            <InputGroup.Text>%</InputGroup.Text>
+                        </InputGroup>
+                    </Form.Group>
+
+                    {image.length > 0 ? (
+                        <Image src={image} alt="Завантажена світлина" className="img-fluid mb-3" />
+                    ) : null}
 
                     <UploadProgress progress={uploadProgress} />
 
-                    <UploadSubmitButton
-                        disabled={image.length === 0 || uploadProgress !== null}
-                        progress={uploadProgress}
-                    />
-                </form>
-            </section>
-        );
-    }
+                    <Paragraph>
+                        <UploadSubmitButton
+                            disabled={image.length === 0 || !isNaN(uploadProgress)}
+                            progress={uploadProgress}
+                        />
+                    </Paragraph>
+                </Card.Body>
+            </Card>
+        </section>
+    );
 }
 
-export default withLoginCheck(SearchForm);
+export default withLoginCheck(SearchFormInternal);
