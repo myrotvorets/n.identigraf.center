@@ -30,6 +30,25 @@ export default class ErrorBoundary extends Component<Props, State> {
 
     public componentDidCatch(error: Error): void {
         Bugsnag.notify(error);
+        if (error.name === 'ChunkLoadError') {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            if (self.caches) {
+                // eslint-disable-next-line promise/no-promise-in-callback
+                self.caches
+                    .keys()
+                    // eslint-disable-next-line promise/no-promise-in-callback
+                    .then((keyList) => Promise.all(keyList.map((key) => self.caches.delete(key))))
+                    .then(() => ('serviceWorker' in navigator ? navigator.serviceWorker.getRegistration() : null))
+                    .then((reg) => reg?.unregister())
+                    .then(() => self.location.reload())
+                    .catch((e) => {
+                        console.error(e);
+                        self.location.reload();
+                    });
+            } else {
+                self.location.reload();
+            }
+        }
     }
 
     public render(): ComponentChild {
