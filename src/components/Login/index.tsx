@@ -43,14 +43,14 @@ export function Login({ setToken }: Readonly<Props>): h.JSX.Element | null {
     const [error, setError] = useState('');
     const [state, setState] = useState<LoginFormState>('initial');
 
-    const onEmailSubmit = useCallback((email: string) => {
+    const onEmailSubmit = useCallback((value: string) => {
         setState('sending');
-        setEmail(email);
+        setEmail(value);
     }, []);
 
-    const onCodeSubmit = useCallback((code: string) => {
+    const onCodeSubmit = useCallback((value: string) => {
         setState('verifying');
-        setCode(code);
+        setCode(value);
     }, []);
 
     const onBackClicked = useCallback(() => setState('link_sent'), []);

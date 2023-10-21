@@ -64,7 +64,7 @@ export function MatchedFaces({ faceID, guid }: Readonly<Props>): h.JSX.Element {
         <Fragment>
             <ListGroup variant="flush">
                 {matchedFaces.map((face, index) => (
-                    <Face {...face} key={index} onClick={onFaceLinkClicked} />
+                    <Face {...face} key={index /* NOSONAR */} onClick={onFaceLinkClicked} />
                 ))}
             </ListGroup>
             {lightbox && (

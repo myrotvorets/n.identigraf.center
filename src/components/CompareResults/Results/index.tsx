@@ -24,7 +24,7 @@ export function Results({ guid, results }: Readonly<Props>): h.JSX.Element {
 
                 <Carousel interval={null} fade style={{ height: '40vh' }} className="mb-3">
                     {similarities.map((similarity, index) => (
-                        <Carousel.Item key={index}>
+                        <Carousel.Item key={index /* NOSONAR */}>
                             <Image
                                 fluid
                                 className="d-block mx-auto"
