@@ -64,7 +64,7 @@ export const commonConfiguration: Configuration & { devServer: DevServerConfigur
                 },
             },
             {
-                test: /\.png$/u,
+                test: /\.(png|jpe?g)$/u,
                 issuer: /\.json$/u,
                 type: 'javascript/auto',
                 loader: 'file-loader',
