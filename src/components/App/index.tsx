@@ -18,16 +18,16 @@ import {
     SearchResultsRoute,
     SearchRoute,
 } from './routes';
-import { lsGet } from '../../utils/localstorage';
+import { lsGet, lsSet } from '../../utils/localstorage';
 import { suspenseWrapper } from '../../utils/suspensewrapper';
 import API, { type ErrorResponse, type GeoResponse } from '../../api';
-import { setPageURL, setUserID, trackPageView } from '../../api/tracker';
+import { setPageURL } from '../../api/tracker';
 import { AppContext, type ApplicationContext } from '../../context';
 import './app.scss';
 
 export default function App(): h.JSX.Element {
     const [isRussia, setIsRussia] = useState(false);
-    const [user, setUser] = useState<string | null | undefined>(undefined);
+    const [token, setToken] = useState<string | null | undefined>(undefined);
     const [userLogin, setUserLogin] = useState('');
     const [url, setUrl] = useState<string>(getCurrentUrl());
     let isFrame = false;
@@ -36,26 +36,22 @@ export default function App(): h.JSX.Element {
         isFrame = new URL(self.location.href).searchParams.has('iframe');
     }
 
-    const setUserLoginAndTrack = useCallback(
-        (login: string) => {
-            setUserLogin(login);
-            if (login) {
-                setUserID(login);
-            }
-
-            trackPageView();
+    const doSetToken = useCallback(
+        (token: string | null): void => {
+            setToken(token);
+            lsSet('token', token ?? '');
         },
-        [setUserLogin],
+        [setToken],
     );
 
     const ctx: ApplicationContext = useMemo(() => {
         return {
-            user,
+            token,
             userLogin,
-            setUser,
-            setUserLogin: setUserLoginAndTrack,
+            setToken: doSetToken,
+            setUserLogin,
         };
-    }, [user, userLogin, setUser, setUserLoginAndTrack]);
+    }, [token, userLogin, doSetToken]);
 
     useEffect(() => {
         async function checkCountry(): Promise<void> {
@@ -71,14 +67,16 @@ export default function App(): h.JSX.Element {
         async function checkToken(): Promise<void> {
             const token = lsGet('token');
             if (token) {
-                const valid = await API.verifyToken(token);
-                if (valid === true) {
-                    setUser(token);
+                const result = await API.verifyToken(token);
+                if (typeof result === 'string') {
+                    setToken(token);
+                    setUserLogin(result);
                     return;
                 }
             }
 
-            setUser(null);
+            setToken(null);
+            setUserLogin('');
         }
 
         void Promise.all([checkCountry(), checkToken()]);

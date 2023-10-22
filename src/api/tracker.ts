@@ -11,11 +11,8 @@ export function setPageURL(url: string, previous?: string): void {
     }
 }
 
-export function trackPageView(title?: string): void {
-    if (title) {
-        self._paq.push(['setDocumentTitle', title]);
-    }
-
+export function trackPageView(): void {
+    self._paq.push(['setDocumentTitle', document.title]);
     self._paq.push(['trackPageView']);
     self._paq.push(['enableLinkTracking']);
 }

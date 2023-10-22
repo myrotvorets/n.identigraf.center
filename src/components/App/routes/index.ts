@@ -57,7 +57,7 @@ export const LogoutRoute = process.env.BUILD_SSR
               ),
       );
 
-export const ContactsRoute = lazy(() => import(/* webpackChunkName: "contacts" */ '../../../routes/ContactsRoutes'));
+export const ContactsRoute = lazy(() => import(/* webpackChunkName: "contacts" */ '../../../routes/ContactsRoute'));
 export const GuideRoute = lazy(() => import(/* webpackChunkName: "about" */ '../../../routes/GuideRoute'));
 export const RequirementsRoute = lazy(
     () => import(/* webpackChunkName: "about" */ '../../../routes/RequirementsRoute'),

@@ -9,6 +9,6 @@ export function useTrackPageView(): void {
             setUserID(userLogin);
         }
 
-        trackPageView(document.title);
+        trackPageView();
     }, [userLogin]);
 }

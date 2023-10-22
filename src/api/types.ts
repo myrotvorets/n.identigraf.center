@@ -10,6 +10,11 @@ export interface VerifyCodeResponse {
     token: string;
 }
 
+export interface VerifyTokenResponse {
+    success: true;
+    login: string;
+}
+
 export interface CheckPhoneResponse {
     success: true;
     user: {

@@ -7,6 +7,7 @@ import type {
     MatchedFacesResponse,
     SearchStatusResponse,
     VerifyCodeResponse,
+    VerifyTokenResponse,
 } from './types';
 export * from './errors';
 export * from './types';
@@ -51,21 +52,23 @@ export default class API {
         return API.post('/identigraf-auth/v2/verify-code', { email, code });
     }
 
-    public static async verifyToken(token: string): Promise<ErrorResponse | boolean> {
+    public static async verifyToken(token: string): Promise<ErrorResponse | string | false> {
         const headers: Record<string, string> = {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         };
 
         try {
-            const response = await fetch('https://api2.myrotvorets.center/identigraf-auth/v2/verify-token', {
+            const response = await fetch('https://api2.myrotvorets.center/identigraf-auth/v2/verify-jwt', {
                 headers,
                 method: 'POST',
                 body: JSON.stringify({ token }),
             });
 
-            if (response.status === 204) {
-                return true;
+            const data = (await response.json()) as VerifyTokenResponse | ErrorResponse;
+
+            if (response.status === 200 && data.success) {
+                return data.login;
             }
 
             if (response.status === 401) {
@@ -75,8 +78,8 @@ export default class API {
             return {
                 success: false,
                 status: response.status,
-                code: 'UNKNOWN_ERROR',
-                message: 'Невідома помилка',
+                code: data.success ? 'UNKNOWN_ERROR' : data.code,
+                message: data.success ? 'Невідома помилка' : data.message,
             };
         } catch (e) {
             Bugsnag.notify(e as Error);

@@ -1,9 +1,9 @@
 import { createContext } from 'react';
 
 export interface ApplicationContext {
-    user: string | null | undefined;
+    token: string | null | undefined;
     userLogin: string;
-    setUser(this: void, user: string | null): void;
+    setToken(this: void, user: string | null): void;
     setUserLogin(this: void, userLogin: string): void;
 }
 

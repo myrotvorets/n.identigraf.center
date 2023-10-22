@@ -29,17 +29,15 @@
     <meta name="theme-color" content="#000100" />
     <link rel="manifest" href="<%= require('./assets/manifest.json') %>" />
 <script>
-let _paq = window._paq = window._paq || [];
-_paq.push(["setCookieDomain", "*." + window.location.hostname]);
-_paq.push(["setDomains", ["*.neuro.identigraf.center","*.myr.identigraf.center"]]);
-_paq.push(["enableCrossDomainLinking"]);
-_paq.push(['enableHeartBeatTimer']);
-_paq.push(['trackPageView']);
-_paq.push(['enableLinkTracking']);
+self._paq = self._paq || [];
+self._paq.push(["setCookieDomain", "*." + self.location.hostname]);
+self._paq.push(["setDomains", ["*.neuro.identigraf.center","*.myr.identigraf.center"]]);
+self._paq.push(["enableCrossDomainLinking"]);
+self._paq.push(['enableHeartBeatTimer']);
 (function() {
     const u="//pond.myrotvorets.center/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '1']);
+    self._paq.push(['setTrackerUrl', u+'matomo.php']);
+    self._paq.push(['setSiteId', '1']);
     const d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
 })();

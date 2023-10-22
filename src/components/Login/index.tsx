@@ -34,7 +34,7 @@ const verifyCode = async (email: string, code: string): Promise<string | ErrorRe
 };
 
 interface Props {
-    setToken?: ApplicationContext['setUser'];
+    setToken?: ApplicationContext['setToken'];
     setLogin?: ApplicationContext['setUserLogin'];
 }
 
@@ -54,10 +54,16 @@ function LoginFormInternal({ setToken, setLogin }: Readonly<Props>): h.JSX.Eleme
         setCode(value);
     }, []);
 
-    const onBackClicked = useCallback(() => setState('link_sent'), []);
+    const onBackClicked = useCallback(() => {
+        setState('link_sent');
+        setError('');
+    }, []);
     const onRetryClicked = useCallback(() => setState('sending'), []);
     const onEmailIssues = useCallback(() => setState('troubles'), []);
-    const onResetClicked = useCallback(() => setState('initial'), []);
+    const onResetClicked = useCallback(() => {
+        setState('initial');
+        setError('');
+    }, []);
 
     useEffect(() => {
         const handlePromise = (
@@ -69,6 +75,7 @@ function LoginFormInternal({ setToken, setLogin }: Readonly<Props>): h.JSX.Eleme
                 .then((result) => {
                     if (typeof result === 'string' || true === result) {
                         setState(nextState);
+                        setError('');
                         return result;
                     }
 

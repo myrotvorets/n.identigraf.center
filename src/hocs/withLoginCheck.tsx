@@ -6,13 +6,13 @@ import { AppContext } from '../context';
 
 export const withLoginCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P> =>
     function Wrapped({ ...props }: P): h.JSX.Element | null {
-        const { user } = useContext(AppContext)!;
+        const { token } = useContext(AppContext)!;
         switch (true) {
-            case user === undefined:
+            case token === undefined:
                 return <Loader />;
 
-            case typeof user === 'string':
-                return <WrappedComponent {...props} token={user} />;
+            case typeof token === 'string':
+                return <WrappedComponent {...props} token={token} />;
 
             default:
                 route('/');
@@ -22,13 +22,13 @@ export const withLoginCheck = <P extends object>(WrappedComponent: ComponentType
 
 export const withVisitorCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P> =>
     function Wrapped({ ...props }: P): h.JSX.Element | null {
-        const { user, setUser, setUserLogin } = useContext(AppContext)!;
+        const { token, setToken, setUserLogin } = useContext(AppContext)!;
         switch (true) {
-            case user === undefined:
+            case token === undefined:
                 return <Loader />;
 
-            case user === null:
-                return <WrappedComponent {...props} setToken={setUser} setLogin={setUserLogin} />;
+            case token === null:
+                return <WrappedComponent {...props} setToken={setToken} setLogin={setUserLogin} />;
 
             default:
                 route('/search');

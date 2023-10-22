@@ -7,7 +7,7 @@ import { SmallLoader } from '../SmallLoader';
 import { AppContext } from '../../context';
 
 export function Home(): h.JSX.Element {
-    const { user } = useContext(AppContext)!;
+    const { token } = useContext(AppContext)!;
     return (
         <Card className="w-100">
             <CardHeader>IDentigraF</CardHeader>
@@ -21,10 +21,10 @@ export function Home(): h.JSX.Element {
                     допомогою одного пристрою.
                 </Paragraph>
 
-                {user === undefined ? (
+                {token === undefined ? (
                     <SmallLoader text="Триває перевірка…" />
                 ) : (
-                    <Button href={user !== null ? '/search' : '/login'} className="d-block" size="lg">
+                    <Button href={token !== null ? '/search' : '/login'} className="d-block" size="lg">
                         Почати
                     </Button>
                 )}

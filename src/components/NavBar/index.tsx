@@ -8,18 +8,17 @@ interface Props {
 }
 
 export function NavBar({ url }: Readonly<Props>): h.JSX.Element {
-    const { user } = useContext(AppContext)!;
+    const { userLogin } = useContext(AppContext)!;
     return (
         <Navbar expand="md" variant="dark">
             <Navbar.Toggle aria-controls="navbar-nav" />
             <Navbar.Collapse id="navbar-nav">
                 <Nav activeKey={url}>
-                    {typeof user !== 'string' && (
+                    {userLogin === '' ? (
                         <Nav.Item>
                             <Nav.Link href="/">Головна</Nav.Link>
                         </Nav.Item>
-                    )}
-                    {typeof user === 'string' && (
+                    ) : (
                         <Fragment>
                             <Nav.Item>
                                 <Nav.Link href="/search">Пошук</Nav.Link>
@@ -53,7 +52,7 @@ export function NavBar({ url }: Readonly<Props>): h.JSX.Element {
                     <Nav.Item>
                         <Nav.Link href="/contacts">Контакти</Nav.Link>
                     </Nav.Item>
-                    {typeof user === 'string' && (
+                    {userLogin !== '' && (
                         <Nav.Item>
                             <Nav.Link href="/logout">Вийти</Nav.Link>
                         </Nav.Item>
