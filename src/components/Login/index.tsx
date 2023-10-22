@@ -34,10 +34,11 @@ const verifyCode = async (email: string, code: string): Promise<string | ErrorRe
 };
 
 interface Props {
-    setToken: ApplicationContext['setUser'];
+    setToken?: ApplicationContext['setUser'];
+    setLogin?: ApplicationContext['setUserLogin'];
 }
 
-export function Login({ setToken }: Readonly<Props>): h.JSX.Element | null {
+function LoginFormInternal({ setToken, setLogin }: Readonly<Props>): h.JSX.Element | null {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
@@ -87,12 +88,13 @@ export function Login({ setToken }: Readonly<Props>): h.JSX.Element | null {
             void handlePromise(verifyCode(email, code), 'logged_in', 'link_sent').then((result) => {
                 if (typeof result === 'string') {
                     lsSet('token', result);
-                    setToken(result);
+                    setToken!(result);
+                    setLogin!(email);
                     route('/search');
                 }
             });
         }
-    }, [state, email, code, setToken]);
+    }, [state, email, code, setToken, setLogin]);
 
     switch (state) {
         case 'initial':
@@ -128,4 +130,4 @@ export function Login({ setToken }: Readonly<Props>): h.JSX.Element | null {
     }
 }
 
-export default withVisitorCheck(Login);
+export const LoginForm = withVisitorCheck(LoginFormInternal);

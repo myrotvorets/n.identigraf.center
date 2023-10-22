@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { Alert, Button, Card, Form } from 'react-bootstrap';
 import { CardHeader } from '../../CardHeader';
 import { Paragraph } from '../../Paragraph';
+import { useDocumentTitle } from '../../../hooks/usedocumenttitle';
+import { useTrackPageView } from '../../../hooks/usetrackpageview';
 
 export type CodeFormState = 'link_sent' | 'verifying';
 
@@ -21,6 +23,16 @@ export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: R
     const [code, setCode] = useState('');
     const [codeValid, setCodeValid] = useState<boolean | undefined>(undefined);
     const ref = useRef<HTMLInputElement>(null);
+
+    let title: string;
+    if (state === 'verifying') {
+        title = 'Перевірка коду…';
+    } else {
+        title = 'Підтвердьте адресу електронної пошти';
+    }
+
+    useDocumentTitle(title);
+    useTrackPageView();
 
     const onFormSubmit = useCallback(
         (e: h.JSX.TargetedEvent<HTMLFormElement>) => {
@@ -59,7 +71,7 @@ export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: R
 
     return (
         <Card as="form" onSubmit={onFormSubmit}>
-            <CardHeader>Підтвердьте адресу електронної пошти</CardHeader>
+            <CardHeader>{title}</CardHeader>
             <Card.Body>
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Paragraph>

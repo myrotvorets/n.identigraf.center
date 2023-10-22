@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Card } from 'react-bootstrap';
 import { CardHeader } from '../CardHeader';
 
-export default function Requirements(): h.JSX.Element {
+export function Requirements(): h.JSX.Element {
     return (
         <Card as="article">
             <CardHeader>Вимоги до підготовки фотоматеріалів</CardHeader>

@@ -13,7 +13,7 @@ export const HomeRoute = lazy(
         import(
             /* webpackChunkName: "home" */
             /* webpackPrefetch: true */
-            '../../../components/Home'
+            '../../../routes/HomeRoute'
         ),
 );
 
@@ -22,25 +22,27 @@ export const SearchRoute = lazy(
         import(
             /* webpackChunkName: "search" */
             /* webpackPrefetch: true */
-            '../../../components/SearchForm'
+            '../../../routes/SearchRoute'
         ),
 );
 
 export const SearchResultsRoute = lazy(
-    () => import(/* webpackChunkName: "srchres" */ '../../../components/SearchResults'),
+    () => import(/* webpackChunkName: "srchres" */ '../../../routes/SearchResultsRoute'),
 );
-export const CompareRoute = lazy(() => import(/* webpackChunkName: "compare" */ '../../../components/CompareForm'));
+
+export const CompareRoute = lazy(() => import(/* webpackChunkName: "compare" */ '../../../routes/CompareRoute'));
 export const CompareResultsRoute = lazy(
-    () => import(/* webpackChunkName: "cmpres" */ '../../../components/CompareResults'),
+    () => import(/* webpackChunkName: "cmpres" */ '../../../routes/CompareResultsRoute'),
 );
-export const FourOhFourRoute = lazy(() => import(/* webpackMode: "eager" */ '../../../components/FourOhFour'));
+
+export const FourOhFourRoute = lazy(() => import(/* webpackMode: "eager" */ '../../../routes/FourOhFourRoute'));
 
 export const LoginRoute = lazy(
     () =>
         import(
             /* webpackChunkName: "login" */
             /* webpackPrefetch: true */
-            '../../../components/Login'
+            '../../../routes/LoginRoute'
         ),
 );
 
@@ -51,10 +53,12 @@ export const LogoutRoute = process.env.BUILD_SSR
               import(
                   /* webpackChunkName: "logout" */
                   /* webpackMode: "eager" */
-                  '../../../components/Logout'
+                  '../../../routes/LogoutRoute'
               ),
       );
 
-export const ContactsRoute = lazy(() => import(/* webpackChunkName: "contacts" */ '../../../components/Contacts'));
-export const GuideRoute = lazy(() => import(/* webpackChunkName: "about" */ '../../../components/Guide'));
-export const RequirementsRoute = lazy(() => import(/* webpackChunkName: "about" */ '../../../components/Requirements'));
+export const ContactsRoute = lazy(() => import(/* webpackChunkName: "contacts" */ '../../../routes/ContactsRoutes'));
+export const GuideRoute = lazy(() => import(/* webpackChunkName: "about" */ '../../../routes/GuideRoute'));
+export const RequirementsRoute = lazy(
+    () => import(/* webpackChunkName: "about" */ '../../../routes/RequirementsRoute'),
+);

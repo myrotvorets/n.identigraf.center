@@ -2,6 +2,8 @@ import { h } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { Alert, Button, Card, Form } from 'react-bootstrap';
 import { CardHeader } from '../../CardHeader';
+import { useDocumentTitle } from '../../../hooks/usedocumenttitle';
+import { useTrackPageView } from '../../../hooks/usetrackpageview';
 
 export type EmailFormState = 'initial' | 'sending';
 
@@ -16,6 +18,16 @@ export function EmailForm({ email: propsEmail, error, onSubmit, state }: Readonl
     const [email, setEmail] = useState(propsEmail);
     const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined);
     const ref = useRef<HTMLInputElement>(null);
+
+    let title: string;
+    if (state === 'sending') {
+        title = 'Відправлення посилання…';
+    } else {
+        title = 'Увійти';
+    }
+
+    useDocumentTitle(title);
+    useTrackPageView();
 
     const emailUpdateHandler = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { value } = currentTarget;
@@ -50,7 +62,7 @@ export function EmailForm({ email: propsEmail, error, onSubmit, state }: Readonl
 
     return (
         <Card onSubmit={onFormSubmit} as="form" className="w-100">
-            <CardHeader>Увійти</CardHeader>
+            <CardHeader>{title}</CardHeader>
             <Card.Body>
                 {error && <Alert variant="danger">{error}</Alert>}
 

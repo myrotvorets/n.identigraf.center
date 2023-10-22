@@ -13,10 +13,10 @@ import { withLoginCheck } from '../../hocs/withLoginCheck';
 import { useXHR } from '../../hooks/usexhr';
 
 interface Props {
-    token: string;
+    token?: string;
 }
 
-function CompareForm({ token }: Readonly<Props>): h.JSX.Element {
+function CompareFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     const [error, setError] = useState<string>('');
     const [data, setData] = useState<FormData | undefined>(undefined);
     const [hasPhoto1, setHasPhoto1] = useState(false);
@@ -27,7 +27,7 @@ function CompareForm({ token }: Readonly<Props>): h.JSX.Element {
         error: xhrError,
         response,
         finished,
-    } = useXHR('https://api2.myrotvorets.center/identigraf/v2/compare', token, data);
+    } = useXHR('https://api2.myrotvorets.center/identigraf/v2/compare', token!, data);
 
     const onFileChange = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         const { files, id } = currentTarget;
@@ -120,4 +120,4 @@ function CompareForm({ token }: Readonly<Props>): h.JSX.Element {
     );
 }
 
-export default withLoginCheck(CompareForm);
+export const CompareForm = withLoginCheck(CompareFormInternal);

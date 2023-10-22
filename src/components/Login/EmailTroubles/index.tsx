@@ -2,6 +2,8 @@ import { h } from 'preact';
 import { Button, Card } from 'react-bootstrap';
 import { CardHeader } from '../../CardHeader';
 import { Paragraph } from '../../Paragraph';
+import { useDocumentTitle } from '../../../hooks/usedocumenttitle';
+import { useTrackPageView } from '../../../hooks/usetrackpageview';
 
 interface Props {
     onBackClicked: () => unknown;
@@ -9,9 +11,12 @@ interface Props {
 }
 
 export function EmailTroubles({ onBackClicked, onRetryClicked }: Readonly<Props>): h.JSX.Element {
+    const title = useDocumentTitle('Проблеми з отриманням електронних листів?');
+    useTrackPageView();
+
     return (
         <Card>
-            <CardHeader>Проблеми з отриманням електронних листів?</CardHeader>
+            <CardHeader>{title}</CardHeader>
             <Card.Body>
                 <Paragraph>Будь ласка, скористайтеся порадами нижче, щоб вирішити проблему:</Paragraph>
                 <ul>

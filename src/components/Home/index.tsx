@@ -6,7 +6,7 @@ import { Paragraph } from '../Paragraph';
 import { SmallLoader } from '../SmallLoader';
 import { AppContext } from '../../context';
 
-export default function Home(): h.JSX.Element {
+export function Home(): h.JSX.Element {
     const { user } = useContext(AppContext)!;
     return (
         <Card className="w-100">

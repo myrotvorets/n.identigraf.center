@@ -3,7 +3,7 @@ import { Card, Image } from 'react-bootstrap';
 import { CardHeader } from '../CardHeader';
 import { Paragraph } from '../Paragraph';
 
-export default function Contacts(): h.JSX.Element {
+export function Contacts(): h.JSX.Element {
     return (
         <Card>
             <CardHeader>Контакти</CardHeader>

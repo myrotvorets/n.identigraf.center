@@ -4,7 +4,7 @@ import { Card } from 'react-bootstrap';
 import { CardHeader } from '../CardHeader';
 import { Paragraph } from '../Paragraph';
 
-export default function Guide(): h.JSX.Element {
+export function Guide(): h.JSX.Element {
     return (
         <Card as="article">
             <CardHeader>Керівництво з оцінки результатів</CardHeader>

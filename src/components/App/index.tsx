@@ -17,22 +17,18 @@ import {
     RequirementsRoute,
     SearchResultsRoute,
     SearchRoute,
-} from './Routes';
+} from './routes';
 import { lsGet } from '../../utils/localstorage';
 import { suspenseWrapper } from '../../utils/suspensewrapper';
 import API, { type ErrorResponse, type GeoResponse } from '../../api';
+import { setPageURL, setUserID, trackPageView } from '../../api/tracker';
 import { AppContext, type ApplicationContext } from '../../context';
 import './app.scss';
-
-declare global {
-    interface Window {
-        _paq: unknown[];
-    }
-}
 
 export default function App(): h.JSX.Element {
     const [isRussia, setIsRussia] = useState(false);
     const [user, setUser] = useState<string | null | undefined>(undefined);
+    const [userLogin, setUserLogin] = useState('');
     const [url, setUrl] = useState<string>(getCurrentUrl());
     let isFrame = false;
 
@@ -40,12 +36,26 @@ export default function App(): h.JSX.Element {
         isFrame = new URL(self.location.href).searchParams.has('iframe');
     }
 
+    const setUserLoginAndTrack = useCallback(
+        (login: string) => {
+            setUserLogin(login);
+            if (login) {
+                setUserID(login);
+            }
+
+            trackPageView();
+        },
+        [setUserLogin],
+    );
+
     const ctx: ApplicationContext = useMemo(() => {
         return {
             user,
+            userLogin,
             setUser,
+            setUserLogin: setUserLoginAndTrack,
         };
-    }, [user, setUser]);
+    }, [user, userLogin, setUser, setUserLoginAndTrack]);
 
     useEffect(() => {
         async function checkCountry(): Promise<void> {
@@ -76,18 +86,7 @@ export default function App(): h.JSX.Element {
 
     const onRouteChange = useCallback((e: RouterOnChangeArgs): void => {
         setUrl(e.url);
-
-        try {
-            self._paq.push(['setCustomUrl', e.url]);
-            if (e.previous) {
-                self._paq.push(['setReferrerUrl', e.previous]);
-            }
-
-            self._paq.push(['trackPageView']);
-            self._paq.push(['enableLinkTracking']);
-        } catch {
-            // Something is broken, swallow the error
-        }
+        setPageURL(e.url, e.previous);
     }, []);
 
     return (

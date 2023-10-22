@@ -1,5 +1,7 @@
 import { h } from 'preact';
 import { Button, Card, Carousel, Image } from 'react-bootstrap';
+import { useDocumentTitle } from '../../../hooks/usedocumenttitle';
+import { useTrackPageView } from '../../../hooks/usetrackpageview';
 
 interface Props {
     guid: string;
@@ -7,11 +9,13 @@ interface Props {
 }
 
 export function Results({ guid, results }: Readonly<Props>): h.JSX.Element {
+    const title = useDocumentTitle('Результати порівняння');
+    useTrackPageView();
     const similarities = Object.values(results);
 
     return (
         <Card className="w-100">
-            <Card.Header className="text-bg-primary">Результати порівняння</Card.Header>
+            <Card.Header className="text-bg-primary">{title}</Card.Header>
 
             <Card.Body>
                 <Image

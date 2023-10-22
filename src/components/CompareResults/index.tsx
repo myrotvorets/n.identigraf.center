@@ -11,7 +11,7 @@ interface Props {
     guid: string;
 }
 
-export default function CompareResults({ guid }: Readonly<Props>): h.JSX.Element {
+export function CompareResults({ guid }: Readonly<Props>): h.JSX.Element {
     const [error, setError] = useState('');
     const [checkInterval, setCheckInterval] = useState<number>(0);
     const [trigger, setTrigger] = useState(0);

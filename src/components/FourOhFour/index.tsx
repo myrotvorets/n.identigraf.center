@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { Card } from 'react-bootstrap';
 
-export default function FourOhFour(): h.JSX.Element {
+export function FourOhFour(): h.JSX.Element {
     return (
         <Card className="bg-danger">
             <Card.Body className="fw-bold">

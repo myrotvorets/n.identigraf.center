@@ -13,10 +13,10 @@ import { withLoginCheck } from '../../hocs/withLoginCheck';
 import { Paragraph } from '../Paragraph';
 
 interface Props {
-    token: string;
+    token?: string;
 }
 
-export function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
+function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     const [image, setImage] = useState('');
     const [error, setError] = useState<string>('');
     const [minSimilarity, setMinSimilarity] = useState<number>(30);
@@ -27,7 +27,7 @@ export function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
         error: xhrError,
         response,
         finished,
-    } = useXHR('https://api2.myrotvorets.center/identigraf/v2/search', token, data);
+    } = useXHR('https://api2.myrotvorets.center/identigraf/v2/search', token!, data);
 
     const onFileChange = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
         setError('');
@@ -141,4 +141,4 @@ export function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     );
 }
 
-export default withLoginCheck(SearchFormInternal);
+export const SearchForm = withLoginCheck(SearchFormInternal);

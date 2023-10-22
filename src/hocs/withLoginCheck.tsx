@@ -4,11 +4,7 @@ import { route } from 'preact-router';
 import { Loader } from '../components/Loader';
 import { AppContext } from '../context';
 
-interface Token {
-    token: string;
-}
-
-export const withLoginCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P & Token> =>
+export const withLoginCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P> =>
     function Wrapped({ ...props }: P): h.JSX.Element | null {
         const { user } = useContext(AppContext)!;
         switch (true) {
@@ -24,19 +20,15 @@ export const withLoginCheck = <P extends object>(WrappedComponent: ComponentType
         }
     };
 
-interface SetToken {
-    setToken: (token: string) => void;
-}
-
-export const withVisitorCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P & SetToken> =>
+export const withVisitorCheck = <P extends object>(WrappedComponent: ComponentType<P>): ComponentType<P> =>
     function Wrapped({ ...props }: P): h.JSX.Element | null {
-        const { user, setUser } = useContext(AppContext)!;
+        const { user, setUser, setUserLogin } = useContext(AppContext)!;
         switch (true) {
             case user === undefined:
                 return <Loader />;
 
             case user === null:
-                return <WrappedComponent {...props} setToken={setUser} />;
+                return <WrappedComponent {...props} setToken={setUser} setLogin={setUserLogin} />;
 
             default:
                 route('/search');
