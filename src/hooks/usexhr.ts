@@ -26,6 +26,7 @@ export const useXHR = (url: string, token: string, data: FormData | undefined): 
     }, []);
 
     const onError = useCallback(() => {
+        setProgress(NaN);
         setFinished(true);
         setError(new Error());
     }, []);
@@ -42,7 +43,7 @@ export const useXHR = (url: string, token: string, data: FormData | undefined): 
             headerMap[header] = value;
         });
 
-        setProgress(100);
+        setProgress(NaN);
         setFinished(true);
         setResponse({
             response: req.responseText,
