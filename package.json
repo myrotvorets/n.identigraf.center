@@ -68,7 +68,7 @@
     "postcss-loader": "^7.3.3",
     "ref-loader": "^1.0.3",
     "sass": "^1.69.5",
-    "sass-loader": "^13.3.2",
+    "sass-loader": "^13.3.3",
     "stack-trace": "^0.0.10",
     "style-loader": "^3.3.3",
     "svgo-loader": "^4.0.0",
