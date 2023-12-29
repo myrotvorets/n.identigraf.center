@@ -67,7 +67,7 @@
     "postcss": "^8.4.32",
     "postcss-loader": "^7.3.4",
     "ref-loader": "^1.0.3",
-    "sass": "^1.69.5",
+    "sass": "^1.69.6",
     "sass-loader": "^13.3.3",
     "stack-trace": "^0.0.10",
     "style-loader": "^3.3.3",
