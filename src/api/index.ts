@@ -146,7 +146,7 @@ export default class API {
         return fetch(endpoint, init)
             .then((response) => {
                 r = response;
-                return response.json() as Promise<R>;
+                return response.json() as Promise<R | ErrorResponse>;
             })
             .catch((e: Error) => {
                 e.message += ` (${init.method ?? 'GET'} ${endpoint}) => ${r?.status ?? 'unknown'}}`;

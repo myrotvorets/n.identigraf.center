@@ -45,7 +45,7 @@ function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
         }
     }, []);
 
-    const onSimilarityChange = useCallback(({ currentTarget }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    const onSimilarityChange = useCallback(({ currentTarget }: h.JSX.TargetedInputEvent<HTMLInputElement>): void => {
         const value = currentTarget.valueAsNumber;
         if (value < 5) {
             setMinSimilarity(5);
@@ -57,7 +57,7 @@ function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     }, []);
 
     const onFormSubmit = useCallback(
-        (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
+        (e: h.JSX.TargetedSubmitEvent<HTMLFormElement>): void => {
             e.preventDefault();
             if (image.length !== 0 && isNaN(uploadProgress)) {
                 setData(new FormData(e.currentTarget));

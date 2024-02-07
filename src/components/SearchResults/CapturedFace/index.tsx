@@ -12,7 +12,7 @@ interface Props {
 
 export function CapturedFace({ face, guid, index }: Readonly<Props>): h.JSX.Element {
     return (
-        <ListGroup.Item>
+        <ListGroup.Item as="li">
             <Row>
                 <Col>
                     <h3>Обличчя {index + 1}</h3>

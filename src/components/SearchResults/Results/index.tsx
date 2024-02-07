@@ -19,7 +19,7 @@ export function Results({ capturedFaces, guid }: Readonly<Props>): h.JSX.Element
             <Card.Header as="header" className="text-bg-primary">
                 <h2 className="my-0 h5">{title}</h2>
             </Card.Header>
-            <ListGroup variant="flush">
+            <ListGroup variant="flush" as="ol">
                 {capturedFaces.map((face, index) => (
                     <CapturedFace face={face} index={index} key={face.faceID} guid={guid} />
                 ))}

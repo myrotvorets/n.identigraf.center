@@ -35,7 +35,7 @@ export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: R
     useTrackPageView();
 
     const onFormSubmit = useCallback(
-        (e: h.JSX.TargetedEvent<HTMLFormElement>) => {
+        (e: h.JSX.TargetedSubmitEvent<HTMLFormElement>) => {
             e.preventDefault();
             if (codeValid) {
                 onSubmit(code);

@@ -34,5 +34,6 @@ setCatchHandler(({ request }) => {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
     return Promise.reject(Response.error());
 });

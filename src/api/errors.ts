@@ -3,6 +3,7 @@ import type { ErrorResponse } from './types';
 const errors: Record<string, string | undefined> = {
     AUTHORIZATION_FAILED: 'Прикра помилка авторизації.',
     AUTHORIZATION_REQUIRED: 'Для виконання цієї дії потрібна авторизація.',
+    FACEX_ERROR: 'Помилка спілкування з сервером',
     BAD_GATEWAY: 'Помилка спілкування з сервером',
     COMM_ERROR: 'Помилка спілкування з сервером',
     COUNTRY_BLOCK: 'Цю дію можна здійснити лише з території вільної України.',

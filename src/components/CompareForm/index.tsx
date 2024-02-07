@@ -40,7 +40,7 @@ function CompareFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     }, []);
 
     const onFormSubmit = useCallback(
-        (e: h.JSX.TargetedEvent<HTMLFormElement>): void => {
+        (e: h.JSX.TargetedSubmitEvent<HTMLFormElement>): void => {
             e.preventDefault();
             if (hasPhoto1 && hasPhoto2 && isNaN(uploadProgress)) {
                 setData(new FormData(e.currentTarget));

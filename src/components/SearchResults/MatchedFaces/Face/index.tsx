@@ -19,7 +19,7 @@ export function Face({
     similarity,
 }: Readonly<Props>): h.JSX.Element {
     return (
-        <ListGroup.Item>
+        <ListGroup.Item as="li">
             <Row>
                 <Col>
                     <a
