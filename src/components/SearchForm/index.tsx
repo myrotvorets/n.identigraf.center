@@ -59,17 +59,21 @@ function SearchFormInternal({ token }: Readonly<Props>): h.JSX.Element {
     const onFormSubmit = useCallback(
         (e: h.JSX.TargetedSubmitEvent<HTMLFormElement>): void => {
             e.preventDefault();
-            if (image.length !== 0 && isNaN(uploadProgress)) {
+            if (image.length !== 0 && isNaN(uploadProgress) && data === undefined) {
                 setData(new FormData(e.currentTarget));
             }
         },
-        [image, uploadProgress],
+        [image, uploadProgress, data],
     );
 
-    useEffect(() => setError(xhrError ? 'Помилка вивантаження файлу' : ''), [xhrError]);
+    useEffect(() => {
+        setError(xhrError ? 'Помилка вивантаження файлу' : '');
+        setData(undefined);
+    }, [xhrError]);
 
     useEffect(() => {
         if (finished && response) {
+            setData(undefined);
             try {
                 const body = JSON.parse(response.response) as SearchUploadResponse | ErrorResponse;
                 if (body.success) {
