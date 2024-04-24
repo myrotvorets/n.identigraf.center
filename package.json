@@ -51,7 +51,7 @@
     "babel-plugin-dynamic-import-node-sync": "^2.0.1",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^7.0.0",
-    "cssnano": "^6.0.3",
+    "cssnano": "^7.0.0",
     "ejs-compiled-loader": "^3.1.0",
     "eslint-formatter-gha": "^1.4.3",
     "eslint-plugin-jest": "^28.0.0",
