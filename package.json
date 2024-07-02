@@ -76,7 +76,7 @@
     "webpack": "^5.90.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.0",
-    "webpack-merge": "^5.10.0",
+    "webpack-merge": "^6.0.0",
     "webpack-subresource-integrity": "^5.2.0-rc.1",
     "workbox-webpack-plugin": "^7.0.0"
   },
