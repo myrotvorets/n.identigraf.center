@@ -9,10 +9,11 @@ import { Config as SVGOConfig } from 'svgo';
 
 let version: string;
 try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path
     version = execSync('git describe --always --long', { cwd: path.resolve(path.join(__dirname, '..')) })
         .toString()
         .trim();
-} catch (e) {
+} catch {
     version = 'development';
 }
 

@@ -7,7 +7,7 @@ export function Requirements(): h.JSX.Element {
         <Card as="article">
             <CardHeader>Вимоги до підготовки фотоматеріалів</CardHeader>
             <Card.Body>
-                <section class="mb-4">
+                <section className="mb-4">
                     <h3>Загальні вимоги до фотографій</h3>
 
                     <ol>
@@ -54,7 +54,7 @@ export function Requirements(): h.JSX.Element {
                     </ol>
                 </section>
 
-                <section class="mb-4">
+                <section className="mb-4">
                     <h3>Загальні вимоги до сканованих фотографій</h3>
 
                     <ol>
@@ -78,7 +78,7 @@ export function Requirements(): h.JSX.Element {
                     </ol>
                 </section>
 
-                <section class="mb-4">
+                <section className="mb-4">
                     <h3>Додаткові вимоги до групових фотографій</h3>
 
                     <ol>
@@ -104,7 +104,7 @@ export function Requirements(): h.JSX.Element {
                     </ol>
                 </section>
 
-                <section class="mb-4">
+                <section className="mb-4">
                     <h3>Додаткові вимоги до фотографій при порівнянні&nbsp;1:1</h3>
 
                     <ol>
@@ -135,7 +135,7 @@ export function Requirements(): h.JSX.Element {
                     </ol>
                 </section>
 
-                <section class="mb-4">
+                <section className="mb-4">
                     <h3>Допустимі методи додаткової обробки фотографій</h3>
 
                     <ol>

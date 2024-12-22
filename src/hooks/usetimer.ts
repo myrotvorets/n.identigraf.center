@@ -14,7 +14,7 @@ export const useTimer = (callback: () => void, delay: number | undefined, trigge
         }
 
         const timerId = self.setTimeout(savedCallback.current, delay);
-        return () => {
+        return (): void => {
             self.clearTimeout(timerId);
         };
     }, [delay, trigger]);

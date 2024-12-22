@@ -28,6 +28,7 @@ export default class ErrorBoundary extends Component<Props, State> {
         return { error };
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public componentDidCatch(error: Error): void {
         Bugsnag.notify(error);
         if (error.name === 'ChunkLoadError') {
@@ -41,7 +42,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                     .then(() => ('serviceWorker' in navigator ? navigator.serviceWorker.getRegistration() : null))
                     .then((reg) => reg?.unregister())
                     .then(() => self.location.reload())
-                    .catch((e) => {
+                    .catch((e: unknown) => {
                         console.error(e);
                         self.location.reload();
                     });

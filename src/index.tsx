@@ -32,12 +32,12 @@ if (!process.env.BUILD_SSR) {
                     installingWorker?.addEventListener('statechange', () => {
                         if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
                             // eslint-disable-next-line promise/no-nesting
-                            reg.update().catch((e) => console.error(e));
+                            reg.update().catch((e: unknown) => console.error(e));
                         }
                     });
                 }),
             )
-            .catch((e) => {
+            .catch((e: unknown) => {
                 console.error(e);
             });
     }
@@ -53,7 +53,7 @@ if (!process.env.BUILD_SSR) {
                     .then(() => ('serviceWorker' in navigator ? navigator.serviceWorker.getRegistration() : null))
                     .then((reg) => reg?.unregister())
                     .then(() => self.location.reload())
-                    .catch((e) => {
+                    .catch((e: unknown) => {
                         console.error(e);
                         self.location.reload();
                     });

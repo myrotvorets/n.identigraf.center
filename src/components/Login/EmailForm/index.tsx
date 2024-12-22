@@ -68,7 +68,7 @@ export function EmailForm({ email: propsEmail, error, onSubmit, state }: Readonl
 
                 <Form.Group className="mb-3" controlId="email">
                     <Form.Label>
-                        Електронна адреса<span className="sr-only"> (обов'язкове поле)</span>:
+                        Електронна адреса<span className="sr-only"> (обов’язкове поле)</span>:
                     </Form.Label>
                     <Form.Control
                         type="email"
