@@ -37,8 +37,9 @@ export default class API {
                 code: 'UNKNOWN_ERROR',
                 message: 'Невідома помилка',
             };
-        } catch (e) {
-            Bugsnag.notify(e as Error);
+        } catch (e: unknown) {
+            const err = e instanceof Error ? e : new Error(String(e));
+            Bugsnag.notify(err);
             return {
                 success: false,
                 status: 502,
@@ -148,9 +149,10 @@ export default class API {
                 r = response;
                 return response.json() as Promise<R | ErrorResponse>;
             })
-            .catch((e: Error) => {
-                e.message += ` (${init.method ?? 'GET'} ${endpoint}) => ${r?.status ?? 'unknown'}}`;
-                Bugsnag.notify(e);
+            .catch((e: unknown) => {
+                const err = e instanceof Error ? e : new Error(String(e));
+                err.message += ` (${init.method ?? 'GET'} ${endpoint}) => ${r?.status ?? 'unknown'}}`;
+                Bugsnag.notify(err);
                 return {
                     success: false,
                     status: 502,

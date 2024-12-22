@@ -79,7 +79,7 @@ export function CodeForm({ email, error, onIssues, onReset, onSubmit, state }: R
                 </Paragraph>
                 <Form.Group className="mb-3" controlId="code">
                     <Form.Label>
-                        Код перевірки<span className="sr-only"> (обов'язкове поле)</span>:
+                        Код перевірки<span className="sr-only"> (обов’язкове поле)</span>:
                     </Form.Label>
                     <Form.Control
                         type="text"

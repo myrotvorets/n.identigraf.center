@@ -83,7 +83,7 @@ function LoginFormInternal({ setToken, setLogin }: Readonly<Props>): h.JSX.Eleme
                     setError(decodeErrorResponse(result));
                     return null;
                 })
-                .catch((_err) => {
+                .catch(() => {
                     setState(errorState);
                     setError('Виникла несподівана помилка.');
                     return null;

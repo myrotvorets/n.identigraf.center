@@ -1,5 +1,5 @@
 import { Resource } from '@opentelemetry/resources';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
@@ -11,21 +11,21 @@ import { Span } from '@opentelemetry/api';
 
 const resource = Resource.default().merge(
     new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: 'identigraf',
-        [SemanticResourceAttributes.SERVICE_VERSION]: process.env.APP_VERSION,
+        [ATTR_SERVICE_NAME]: 'identigraf',
+        [ATTR_SERVICE_VERSION]: process.env.APP_VERSION,
     }),
 );
-
-const provider = new WebTracerProvider({
-    resource,
-});
 
 const exporter = new OTLPTraceExporter({
     url: 'https://otel.myrotvorets.center/v1/traces',
 });
 
 const processor = new BatchSpanProcessor(exporter);
-provider.addSpanProcessor(processor);
+
+const provider = new WebTracerProvider({
+    resource,
+    spanProcessors: [processor],
+});
 
 provider.register({
     contextManager: new ZoneContextManager(),
