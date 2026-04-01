@@ -69,7 +69,7 @@
     "sass-loader": "^16.0.4",
     "stack-trace": "^0.0.10",
     "style-loader": "^4.0.0",
-    "svgo-loader": "^4.0.0",
+    "svgo-loader": "^5.0.0",
     "terser-webpack-plugin": "^5.3.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
