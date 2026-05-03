@@ -67,7 +67,7 @@
     "ref-loader": "^1.0.3",
     "sass": "^1.83.0",
     "sass-loader": "^16.0.4",
-    "stack-trace": "^0.0.10",
+    "stack-trace": "^1.0.0",
     "style-loader": "^4.0.0",
     "svgo-loader": "^5.0.0",
     "terser-webpack-plugin": "^5.3.11",
